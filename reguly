@@ -1,0 +1,9 @@
+PZ.P.3 - Hitori
+Napisać aplikację rozwiązującą łamigłówkę Hitori na kwadratowej planszy o dowolnym rozmiarze.
+Aplikacja powinna umożliwiać wczytywanie instancji łamigłówki z pliku, rozwiązywanie jej przez
+człowieka, jak i automatyczne generowanie rozwiązania bazujące na algorytmie A*.
+Należy   zapewnić   prosty   interfejs   graficzny,   który   w   przypadku   automatycznego
+rozwiązywania pokazuje prostą animację pokazującą kolejne wykonywane kroki.
+Reguły: 
+https://en.wikipedia.org/wiki/Hitori
+http://www.hitoriconquest.com/
