@@ -10,7 +10,7 @@ public class Game extends JFrame {
 	 */
 	private static final long serialVersionUID = -6428442114002141800L;
 
-	public void display() {
+	public void display(int gridSize) {
 		setSize(540,620);
 		JPanel regPanel = new JPanel();
 		add(regPanel);

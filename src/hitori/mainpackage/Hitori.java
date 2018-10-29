@@ -32,11 +32,10 @@ public class Hitori extends JFrame {
 	class continueListener implements ActionListener {
 		 @Override
 		public void actionPerformed(ActionEvent e) {
-			 Object selectedGridSize = gridSizeBox.getSelectedItem();
-			 if ((String) selectedGridSize != "") {
+			 if ((String) gridSizeBox.getSelectedItem() != "") {
 				 dispose();
 				 Game launchGame = new Game();
-				 launchGame.display();
+				 launchGame.display(gridSizeBox.getSelectedIndex() + 4);
 			 }
 			 errorLabel.setText("The grid size has not been chosen!");
 		}
