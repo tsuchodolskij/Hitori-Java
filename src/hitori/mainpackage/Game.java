@@ -1,5 +1,6 @@
 package hitori.mainpackage;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -37,7 +38,7 @@ public class Game extends JFrame {
 			@Override
 			public Dimension getPreferredSize() {
 				int screenWidth = (int) screenSize.width * 3 / 4;
-				int screenHeight = screenSize.height;
+				int screenHeight = screenSize.height - 64;
 				return new Dimension(screenWidth, screenHeight);
 			}
 
@@ -63,7 +64,7 @@ public class Game extends JFrame {
 	        @Override
 	        public Dimension getPreferredSize() {
 	        	int screenWidth = (int) screenSize.width / 4;
-				int screenHeight = screenSize.height;
+				int screenHeight = screenSize.height - 64;
 	            return new Dimension(screenWidth, screenHeight);
 	        }
 
@@ -81,6 +82,7 @@ public class Game extends JFrame {
 	public Game() {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setVisible(true);
+		setLayout(new BorderLayout());
 		setTitle("Hitori");
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -90,7 +92,7 @@ public class Game extends JFrame {
 	
 	public void buildGrid(int gridSize) {
 		JPanel gamePane = new JPanel(new GridBagLayout());
-		gamePane.setSize(screenSize.width, screenSize.height);
+		gamePane.setSize(screenSize.width, screenSize.height - 64);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
         gbc.gridy = 0;
