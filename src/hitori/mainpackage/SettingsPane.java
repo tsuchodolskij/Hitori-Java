@@ -26,18 +26,19 @@ class SettingsPane extends JPanel {
 	JLabel gridSizeLabel = new JLabel("Choose the grid size:");
 	//JLabel errorLabel = new JLabel(errorMsg);
 	JButton buildGridButton = new JButton("Build Grid");
+	JButton checkButton = new JButton("Check");
 	JButton solveButton = new JButton("Solve");
 	JButton exitButton = new JButton("Exit");
 	JComboBox<String> gridSizeBox;
 	
 	class buildGridListener implements ActionListener {
-		 @Override
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			 
 		}
 	}
 	 
-	 class exitListener implements ActionListener {
+	 class checkListener implements ActionListener {
 		 @Override
 		 public void actionPerformed(ActionEvent e) {
 			 
@@ -45,6 +46,13 @@ class SettingsPane extends JPanel {
 	 }
 	 
 	 class solveListener implements ActionListener {
+		 @Override
+		 public void actionPerformed(ActionEvent e) {
+			 
+		}
+	 }
+	 
+	 class exitListener implements ActionListener {
 		 @Override
 		 public void actionPerformed(ActionEvent e) {
 			 
@@ -68,11 +76,15 @@ class SettingsPane extends JPanel {
 		add(buildGridButton);
 		buildGridButton.addActionListener(new buildGridListener());
 		
-		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 135, 110, 25);
+		checkButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 135, 110, 25);
+		add(checkButton);
+		checkButton.addActionListener(new checkListener());
+		
+		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 190, 110, 25);
 		add(solveButton);
 		solveButton.addActionListener(new solveListener());
 		
-		exitButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 165, 110, 25);
+		exitButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 220, 110, 25);
 		add(exitButton);
 		exitButton.addActionListener(new exitListener());
 	}

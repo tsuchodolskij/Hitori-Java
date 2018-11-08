@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -12,21 +14,41 @@ import javax.swing.border.LineBorder;
 class GridPane extends JPanel {
 
 	private static final long serialVersionUID = 5376889337682664210L;
-
+	
+	class ButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if (((Cell) e.getSource()).isPressed()) {
+				((Cell) e.getSource()).setBackground(Color.WHITE);
+				((Cell) e.getSource()).setForeground(Color.BLACK);
+				((Cell) e.getSource()).setPressed(false);
+			}
+			else {
+				((Cell) e.getSource()).setBackground(Color.BLACK);
+				((Cell) e.getSource()).setForeground(Color.WHITE);
+				((Cell) e.getSource()).setPressed(true);
+			}
+			System.out.println("Button value: " + ((Cell) e.getSource()).getValue());
+			System.out.println("Button x coordinate: " + ((Cell) e.getSource()).getxCoordinate());
+			System.out.println("Button y coordinate: " + ((Cell) e.getSource()).getyCoordinate());	
+		}
+	}
+	
 	public GridPane(int gridSize) {
-		int squaredSize = gridSize * gridSize;
-		Cell cellGrid[] = new Cell[squaredSize];
+		Cell[][] cellGrid = new Cell[gridSize][gridSize];
 		setLayout(new GridLayout(gridSize, gridSize));
 	
-		for (int i = 0; i < squaredSize; i++) {
-			cellGrid[i] = new Cell(i+1);
-			if(gridSize <= 10)
-				cellGrid[i].setFont(new Font("Arial", Font.BOLD, 40));
-			else if(gridSize > 30)
-				cellGrid[i].setFont(new Font("Arial", Font.BOLD, 7));
-			cellGrid[i].setBackground(Color.WHITE);
-			cellGrid[i].setBorder(new LineBorder(Color.BLACK, 1));
-			add(cellGrid[i]);
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				cellGrid[i][j] = new Cell(40, i, j);
+				if (gridSize <= 10)
+					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 24));
+				else if (gridSize <= 20)
+					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 18));
+				cellGrid[i][j].setBackground(Color.WHITE);
+				cellGrid[i][j].setBorder(new LineBorder(Color.BLACK, 1));
+				cellGrid[i][j].addActionListener(new ButtonListener());
+				add(cellGrid[i][j]);
+			}
 		}
 	}
 	
