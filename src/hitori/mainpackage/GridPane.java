@@ -83,12 +83,13 @@ class GridPane extends JPanel {
 		ArrayList<Point> points = new ArrayList<Point>();
 		boolean[][] visited = new boolean[gridSize][gridSize];
 		
-		for (int i = 0; i < gridSize; i++) {
+		a: for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
 				if(clicked[i][j] == false) {
 					points.add(new Point(i,j));
 					visited[i][j] = true;
-					break;
+					System.out.println("Poczatkowy pkt: " + i + " "+ j);
+					break a;
 				}
 			}
 		}
