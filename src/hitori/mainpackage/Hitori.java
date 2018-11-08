@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 public class Hitori extends JFrame {
 	
-	
 	private static final long serialVersionUID = -1663267871917663300L;
 
 	private String errorMsg;
@@ -57,8 +56,8 @@ public class Hitori extends JFrame {
 		gamePane.add(gridSizeLabel);
 		
 		gridSizeBox = new JComboBox<String>(gridSizeList);
-		((JLabel)gridSizeBox.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		gridSizeBox.setBounds(160, 55, 80, 25);
+		((JLabel)gridSizeBox.getRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		gamePane.add(gridSizeBox);
 		
 		buildGridButton.setBounds(80, 100, 110, 25);
