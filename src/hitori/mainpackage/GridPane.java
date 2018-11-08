@@ -2,6 +2,7 @@ package hitori.mainpackage;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 
@@ -19,6 +20,10 @@ class GridPane extends JPanel {
 	
 		for (int i = 0; i < squaredSize; i++) {
 			cellGrid[i] = new Cell(i+1);
+			if(gridSize <= 10)
+				cellGrid[i].setFont(new Font("Arial", Font.BOLD, 40));
+			else if(gridSize > 30)
+				cellGrid[i].setFont(new Font("Arial", Font.BOLD, 7));
 			cellGrid[i].setBackground(Color.WHITE);
 			cellGrid[i].setBorder(new LineBorder(Color.BLACK, 1));
 			add(cellGrid[i]);

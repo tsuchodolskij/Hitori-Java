@@ -1,5 +1,7 @@
 package hitori.mainpackage;
 
+import java.awt.Font;
+
 import javax.swing.JButton;
 
 public class Cell extends JButton {
