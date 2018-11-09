@@ -223,7 +223,7 @@ class GridPane extends JPanel {
 		for (int i = 0; i < gridSize; i++) {
 			k = i;
 			for (int j = 0; j < gridSize; j++) {
-				map[i][k] = r.nextInt(gridSize);; //=j+1
+				map[i][k] = j+1;
 				k = (k+1)%gridSize;
 			}
 		}
