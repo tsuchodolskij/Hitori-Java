@@ -20,7 +20,7 @@ class GridPane extends JPanel {
 	private int gridSize;
 	private int howManyBlack;
 	private Integer[][] map;
-	private boolean[][] clicked;
+	private boolean[][] clicked;Code completion available ( Ctrl+Space )
 	
 	class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -61,7 +61,7 @@ class GridPane extends JPanel {
 		clicked = new boolean[gridSize][gridSize];
 	
 		prepareMap(gridSize);
-		
+
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
 				cellGrid[i][j] = new Cell(map[i][j], i, j);
@@ -190,6 +190,57 @@ class GridPane extends JPanel {
 				map[second][j] = tmp;
 			}
 		}
+
+
+		//generator
+/*
+		ArrayList<Point> points = new ArrayList<Point>();
+		boolean[][] covered = new boolean[gridSize][gridSize];
+
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				covered[i][j] = clicked[i][j] = false; }}
+
+
+		int max = (gridSize-1)/2 + 1;
+		max *= max;
+
+		int endless = 0;
+
+		tmp = r.nextInt(gridSize);
+		while(points.size()< max - 3) {
+			first = r.nextInt(gridSize);
+			second = r.nextInt(gridSize);
+
+			System.out.println("x,y: "+first+","+second);
+			clicked[first][second] = true;
+			howManyBlack++;
+
+			if(checkCut() || checkTouch(first,second)){
+				clicked[first][second] = false;
+				howManyBlack--;
+			}
+			else if(!covered[first][second]){
+				points.add(new Point(first, second));
+				covered[first][second] = true;
+			}
+			System.out.println("po wyjsciu"+endless);
+			endless++;
+			if(endless >50)
+				break;
+
+		}
+
+		for(int i=0; i<points.size(); ++i){
+			do {
+				tmp = r.nextInt(gridSize)+1;
+			} while(tmp == map[points.get(i).x][points.get(i).y]);
+
+			map[points.get(i).x][points.get(i).y] = tmp;
+			clicked[points.get(i).x][points.get(i).y] = false;
+			howManyBlack--;
+		}
+		*/
 	}
 	
 	@Override
