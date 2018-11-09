@@ -93,7 +93,7 @@ class GridPane extends JPanel {
 		
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
-				System.out.println("Current tile: " + i + " " + j +" checked value:"+checked[i][j]);
+				//System.out.println("Current tile: " + i + " " + j +" checked value:"+checked[i][j]);
 				if(clicked[i][j] == true) {
 					checked[i][j] = 2;
 					continue;
@@ -255,42 +255,41 @@ class GridPane extends JPanel {
 
 
 		//generator
-/*
-		ArrayList<Point> points = new ArrayList<Point>();
-		boolean[][] covered = new boolean[gridSize][gridSize];
 
+		ArrayList<Point> points = new ArrayList<Point>();		// hold the black fields
+		boolean[][] checked = new boolean[gridSize][gridSize]; 
+		int hit = 0;											
+		
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
-				covered[i][j] = clicked[i][j] = false; }}
+				checked[i][j] = clicked[i][j] = false; }}
 
-
-		int max = (gridSize-1)/2 + 1;
-		max *= max;
-
-		int endless = 0;
-
-		tmp = r.nextInt(gridSize);
-		while(points.size()< max - 3) {
+		while(hit != gridSize*gridSize) {						// hit every position on board
+			
 			first = r.nextInt(gridSize);
-			second = r.nextInt(gridSize);
+			second = r.nextInt(gridSize);						// get random field
 
-			System.out.println("x,y: "+first+","+second);
-			clicked[first][second] = true;
-			howManyBlack++;
-
-			if(checkCut() || checkTouch(first,second)){
-				clicked[first][second] = false;
+			if(!clicked[first][second]) {						// cover it
+				clicked[first][second] = true;	
+				howManyBlack++;
+			}
+					
+			if(checkCut() || checkTouch(first,second)){			// check if it's possible to cover it
+				
+				clicked[first][second] = false;					// if not it's a normal field again
 				howManyBlack--;
+				
+				if(!checked[first][second]) {					// hit the field for the 1st time
+					hit++;
+					checked[first][second] = true;
+				}
 			}
-			else if(!covered[first][second]){
+			else if(!checked[first][second]){					// add new black field to array
+				System.out.println("covered: "+first+", "+second);
 				points.add(new Point(first, second));
-				covered[first][second] = true;
+				checked[first][second] = true;
+				hit++;
 			}
-			System.out.println("po wyjsciu"+endless);
-			endless++;
-			if(endless >50)
-				break;
-
 		}
 
 		for(int i=0; i<points.size(); ++i){
@@ -298,11 +297,11 @@ class GridPane extends JPanel {
 				tmp = r.nextInt(gridSize)+1;
 			} while(tmp == map[points.get(i).x][points.get(i).y]);
 
-			map[points.get(i).x][points.get(i).y] = tmp;
+			map[points.get(i).x][points.get(i).y] = tmp;		// mix numbers
 			clicked[points.get(i).x][points.get(i).y] = false;
-			howManyBlack--;
+			howManyBlack--;										// clear the board
 		}
-		*/
+		
 	}
 	
 	@Override
