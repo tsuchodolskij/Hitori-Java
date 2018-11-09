@@ -20,7 +20,8 @@ class GridPane extends JPanel {
 	private int gridSize;
 	private int howManyBlack;
 	private Integer[][] map;
-	private boolean[][] clicked;
+	private boolean[][] clicked; // true == black
+	private Cell[][] cellGrid;
 	
 	class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -49,13 +50,14 @@ class GridPane extends JPanel {
 			//System.out.println("Button x coordinate: " + x);
 			//System.out.println("Button y coordinate: " + y);	
 			//System.out.println("Black tiles: " + howManyBlack);
+			check();
 		}
 	}
 	
 	public GridPane(int gridS) {
 		gridSize = gridS;
 		howManyBlack = 0;
-		Cell[][] cellGrid = new Cell[gridSize][gridSize];
+		cellGrid = new Cell[gridSize][gridSize];
 		setLayout(new GridLayout(gridSize, gridSize));
 		map = new Integer[gridSize][gridSize];
 		clicked = new boolean[gridSize][gridSize];
@@ -79,6 +81,65 @@ class GridPane extends JPanel {
 		}
 	}
 	
+	// return true if hitori is solved, no collisions at all
+	private boolean check() {
+		Integer[][] checked = new Integer[gridSize][gridSize];  // initialized with 0, 0-unvisited, 1-with collision, 2-without collision
+		
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				checked[i][j] = 0;
+			}
+		}
+		
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				System.out.println("Current tile: " + i + " " + j +" checked value:"+checked[i][j]);
+				if(clicked[i][j] == true) {
+					checked[i][j] = 2;
+					continue;
+				}
+				int k = j+1;
+				int collisions = 0;
+				while(k < gridSize) {
+					if(clicked[i][k] == false && map[i][k] == map[i][j]) {
+						checked[i][k] = 1; 
+						cellGrid[i][j].setForeground(Color.RED);
+						collisions++;
+					}
+					k++;
+				}
+				int l = i+1;
+				while(l < gridSize) {
+					if(clicked[l][j] == false && map[l][j] == map[i][j]) {
+						checked[l][j] = 1; 
+						cellGrid[i][j].setForeground(Color.RED);
+						collisions++;
+					}
+					l++;
+				}
+				
+				if(collisions == 0 && checked[i][j] == 0) {
+					checked[i][j] = 2;
+					cellGrid[i][j].setForeground(Color.BLACK);
+				}
+				else {
+					cellGrid[i][j].setForeground(Color.RED);
+					checked[i][j] = 1;
+				}
+			}
+		}
+		
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				if(checked[i][j] == 1) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	private boolean checkCut() {
 		ArrayList<Point> points = new ArrayList<Point>();
 		boolean[][] visited = new boolean[gridSize][gridSize];
@@ -88,7 +149,7 @@ class GridPane extends JPanel {
 				if(clicked[i][j] == false) {
 					points.add(new Point(i,j));
 					visited[i][j] = true;
-					System.out.println("Poczatkowy pkt: " + i + " "+ j);
+					//System.out.println("Poczatkowy pkt: " + i + " "+ j);
 					break a;
 				}
 			}
@@ -156,16 +217,17 @@ class GridPane extends JPanel {
 	}
 	
 	private void prepareMap(int gridSize) {
+		Random r = new Random();
+		
 		int k;
 		for (int i = 0; i < gridSize; i++) {
 			k = i;
 			for (int j = 0; j < gridSize; j++) {
-				map[i][k] = j+1;
+				map[i][k] = r.nextInt(gridSize);; //=j+1
 				k = (k+1)%gridSize;
 			}
 		}
 		
-		Random r = new Random();
 		int first, second, tmp;
 		for (int i = 0; i < gridSize/2; i++) {
 			do {
