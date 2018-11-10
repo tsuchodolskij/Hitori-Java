@@ -22,6 +22,8 @@ class GridPane extends JPanel {
 	private Integer[][] map;
 	private boolean[][] clicked; // true == black
 	private Cell[][] cellGrid;
+	private int touch;
+	private boolean cut;
 	
 	class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -34,6 +36,9 @@ class GridPane extends JPanel {
 				((Cell) e.getSource()).setPressed(false);
 				howManyBlack--;
 				clicked[x][y] = false;
+				
+				if(checkTouch(x,y) != 0)
+					touch -= checkTouch(x,y);
 			}
 			else {
 				((Cell) e.getSource()).setBackground(Color.BLACK);
@@ -41,20 +46,34 @@ class GridPane extends JPanel {
 				((Cell) e.getSource()).setPressed(true);
 				howManyBlack++;
 				clicked[x][y] = true;
-				if(checkTouch(x,y))
+				if(checkTouch(x,y) != 0)
+					touch += checkTouch(x,y);
+				
+				/*if(checkTouch(x,y) != 0)
 					System.out.println("TILES ARE TOUCHING EACH OTHER");	
 				if(checkCut())
-					System.out.println("WHITE TILES ARE NOT IN ONE PIECE");
+					System.out.println("WHITE TILES ARE NOT IN ONE PIECE");*/
 			}
 			//System.out.println("Button value: " + ((Cell) e.getSource()).getValue());
 			//System.out.println("Button x coordinate: " + x);
 			//System.out.println("Button y coordinate: " + y);	
 			//System.out.println("Black tiles: " + howManyBlack);
-			check();
+			
+			//System.out.println("TOUCH: " + touch);
+			
+			if(checkCut() == true)
+				cut = true;
+			else
+				cut = false;
+			
+			if(check() && touch == 0 && cut == false)
+				System.out.println("GRATULUJE! WYGRALES");
 		}
 	}
 	
 	public GridPane(int gridS) {
+		touch = 0;
+		cut = false;
 		gridSize = gridS;
 		howManyBlack = 0;
 		cellGrid = new Cell[gridSize][gridSize];
@@ -195,25 +214,27 @@ class GridPane extends JPanel {
 		else return true;
 	}
 	
-	private boolean checkTouch(int x, int y) {
+	private int checkTouch(int x, int y) {
+		int withHowMany = 0;
+		
 		if(x != 0) {
 			if(clicked[x-1][y] == true)
-				return true;
+				withHowMany++;
 		}
 		if(x != gridSize-1) {
 			if(clicked[x+1][y] == true)
-				return true;
+				withHowMany++;
 		}
 		if(y != 0) {
 			if(clicked[x][y-1] == true)
-				return true;
+				withHowMany++;
 		}
 		if(y != gridSize-1) {
 			if(clicked[x][y+1] == true)
-				return true;
+				withHowMany++;
 		}
 		
-		return false;
+		return withHowMany;
 	}
 	
 	private void prepareMap(int gridSize) {
@@ -274,7 +295,7 @@ class GridPane extends JPanel {
 				howManyBlack++;
 			}
 					
-			if(checkCut() || checkTouch(first,second)){			// check if it's possible to cover it
+			if(checkCut() || checkTouch(first,second) != 0){	// check if it's possible to cover it
 				
 				clicked[first][second] = false;					// if not it's a normal field again
 				howManyBlack--;
@@ -285,7 +306,7 @@ class GridPane extends JPanel {
 				}
 			}
 			else if(!checked[first][second]){					// add new black field to array
-				System.out.println("covered: "+first+", "+second);
+				//System.out.println("covered: "+first+", "+second);
 				points.add(new Point(first, second));
 				checked[first][second] = true;
 				hit++;
