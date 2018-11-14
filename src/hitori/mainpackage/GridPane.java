@@ -61,7 +61,7 @@ class GridPane extends JPanel {
 			
 			//System.out.println("TOUCH: " + touch);
 			
-			if(checkCut(clicked) == true)
+			if(checkCut(clicked, howManyBlack) == true)
 				cut = true;
 			else
 				cut = false;
@@ -110,21 +110,45 @@ class GridPane extends JPanel {
 		ArrayList<State> tmp = expand(new State(-1, -1, gridSize, clicked, howManyBlack, 0, 0, 0));
 		for(State i : tmp) {
 			states.add(i);
-			System.out.println("x: " + i.x+ " y: "+ i.y);
+			//System.out.println("x: " + i.x+ " y: "+ i.y);
+			
+			/*for (int k = 0; k < gridSize; k++) {
+				System.out.println("");
+				for (int j = 0; j < gridSize; j++) {
+					if(i.getBlack(k,j) == true)
+						System.out.print("1 ");
+					else 
+						System.out.print("0 ");
+				}
+			}*/
 		}
 		
 		while(true) {
 			// finding state with the lowest heuristic and cost
 			State lowestHC = states.get(0);
 			int lowestIndex = 0;
+			System.out.println("HC:" + lowestHC.getHC());
 			for (int i = 1; i < states.size(); i++) {
+				System.out.println("HC:" + states.get(i).getHC());
 				if(states.get(i).getHC() < lowestHC.getHC()) {
 					lowestHC = states.get(i);
 					lowestIndex = i;
 				}
 			}
 			
+			System.out.println("LOWEST HC:" + lowestHC.getHC());
+			for (int k = 0; k < gridSize; k++) {
+				System.out.println("");
+				for (int x = 0; x < gridSize; x++) {
+					if(lowestHC.getBlack(k, x) == true)
+						System.out.print("1 ");
+					else 
+						System.out.print("0 ");
+				}
+			}
+			
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
+				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
 				updateMap(lowestHC.getMapBlack());
 				break;
 			}
@@ -157,7 +181,7 @@ class GridPane extends JPanel {
 	}
 	
 	private ArrayList<State> expand(State e) {
-		howManyBlack = e.getBlackCount();
+		//howManyBlack = e.getBlackCount();
 		
 		boolean[][] checked = new boolean[gridSize][gridSize]; // 0 means unchecked
 	
@@ -191,20 +215,42 @@ class GridPane extends JPanel {
 					
 					if(vect.size() > 1) { // if there is collision, make other states
 						for(int m = 0; m < vect.size(); m++) {
-							System.out.println("x: " + vect.get(m).x+ " y: "+ vect.get(m).y);
 							
-							boolean[][] newMapBlack = e.getMapBlack(); // getting map for child
+							boolean[][] newMapBlack = new boolean[gridSize][gridSize]; // getting map for child
+							for (int k = 0; k < gridSize; k++) {
+								for (int x = 0; x < gridSize; x++) {
+									if(e.getBlack(k,x) == true)
+										newMapBlack[k][x] = true;
+									else 
+										newMapBlack[k][x] = false;
+								}
+							}
 							newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
 							
+							for (int k = 0; k < gridSize; k++) {
+								System.out.println("");
+								for (int x = 0; x < gridSize; x++) {
+									if(newMapBlack[k][x] == true)
+										System.out.print("1 ");
+									else 
+										System.out.print("0 ");
+								}
+							}
+							System.out.println("x: " + vect.get(m).x + " y: " + vect.get(m).y);
+							
 							int isTerminal = 0;
-							if(check(newMapBlack)) 
-								isTerminal = 1;
-							else if(checkCut(newMapBlack) || checkTouch(vect.get(m).x, vect.get(m).y, newMapBlack) != 0)
+							if(checkCut(newMapBlack, e.getBlackCount()+1) || checkTouch(vect.get(m).x, vect.get(m).y, newMapBlack) != 0)
 								isTerminal = 2;
+							else if(check(newMapBlack)) 
+								isTerminal = 1;
+
+							
+							System.out.println("x: " + vect.get(m).x+ " y: "+ vect.get(m).y + " terminal: " + isTerminal);
 							
 							int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
 							
-							states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
+							if(isTerminal != 2)
+								states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
 									e.getBlackCount()+1, vect.size(), isTerminal, sidesCollision));
 						}
 					}
@@ -231,7 +277,7 @@ class GridPane extends JPanel {
 			i++;
 		}
 		i = x - 1;
-		while(i > 0) {
+		while(i >= 0) {
 			if(newMapBlack[i][y] == false && map[i][y] == map[x][y]) {
 				collisions++;
 				break;
@@ -247,7 +293,7 @@ class GridPane extends JPanel {
 			i++;
 		}
 		i = x - 1;
-		while(i > 0) {
+		while(i >= 0) {
 			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
 				collisions++;
 				break;
@@ -320,7 +366,7 @@ class GridPane extends JPanel {
 	}
 	
 	//return true if there is cut of white tiles
-	private boolean checkCut(boolean[][] clicked) {
+	private boolean checkCut(boolean[][] clicked, int howManyBlack) {
 		ArrayList<Point> points = new ArrayList<Point>();
 		boolean[][] visited = new boolean[gridSize][gridSize];
 		
@@ -458,7 +504,7 @@ class GridPane extends JPanel {
 				howManyBlack++;
 			}
 					
-			if(checkCut(clicked) || checkTouch(first, second, clicked) != 0){	// check if it's possible to cover it
+			if(checkCut(clicked, howManyBlack) || checkTouch(first, second, clicked) != 0){	// check if it's possible to cover it
 				
 				clicked[first][second] = false;					// if not it's a normal field again
 				howManyBlack--;
