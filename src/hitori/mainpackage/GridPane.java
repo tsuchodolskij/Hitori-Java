@@ -25,6 +25,8 @@ class GridPane extends JPanel {
 	private int touch;
 	private boolean cut;
 	
+	private boolean[][]notColiding; // cells with values that don't collide with anything
+	
 	class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int x = ((Cell) e.getSource()).getxCoordinate();
@@ -80,7 +82,8 @@ class GridPane extends JPanel {
 		setLayout(new GridLayout(gridSize, gridSize));
 		map = new Integer[gridSize][gridSize];
 		clicked = new boolean[gridSize][gridSize];
-	
+		notColiding = new boolean[gridSize][gridSize];
+		
 		prepareMap(gridSize);
 
 		for (int i = 0; i < gridSize; i++) {
@@ -96,9 +99,20 @@ class GridPane extends JPanel {
 				add(cellGrid[i][j]);
 				
 				clicked[i][j] = false;
+				notColiding[i][j] = false;
 			}
 		}
 		
+		for(int i=0; i<gridSize; ++i) {
+			for(int j=0; j<gridSize; ++j) {
+				System.out.print(map[i][j]+" ");
+			}
+			System.out.println();
+		}
+			
+		
+		
+		//expand1();
 		aStar();
 	}
 /*--------------------------------------      A*      -------------------------------------------------------*/	
@@ -107,7 +121,7 @@ class GridPane extends JPanel {
 		ArrayList<State> states = new ArrayList<State>();
 		
 		// expanding zero state
-		ArrayList<State> tmp = expand(new State(-1, -1, gridSize, clicked, howManyBlack, 0, 0, 0));
+		ArrayList<State> tmp = expand(new State(-1, -1, gridSize, clicked, howManyBlack, 0, 0, 0, 0));
 		for(State i : tmp) {
 			states.add(i);
 			//System.out.println("x: " + i.x+ " y: "+ i.y);
@@ -128,12 +142,15 @@ class GridPane extends JPanel {
 			State lowestHC = states.get(0);
 			int lowestIndex = 0;
 			System.out.println("HC:" + lowestHC.getHC());
-			for (int i = 1; i < states.size(); i++) {
-				System.out.println("HC:" + states.get(i).getHC());
+			for (int i = 0; i < states.size(); i++) {
+				//System.out.println("HC:" + states.get(i).getHC());
 				if(states.get(i).getHC() < lowestHC.getHC()) {
 					lowestHC = states.get(i);
 					lowestIndex = i;
 				}
+				/*if(states.get(i).getHC()>lowestHC.getHC()) {
+					states.remove(i);
+				}*/
 			}
 			
 			System.out.println("LOWEST HC:" + lowestHC.getHC());
@@ -146,6 +163,7 @@ class GridPane extends JPanel {
 						System.out.print("0 ");
 				}
 			}
+			System.out.println("");
 			
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
 				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
@@ -181,16 +199,16 @@ class GridPane extends JPanel {
 	}
 	
 	private ArrayList<State> expand(State e) {
-		//howManyBlack = e.getBlackCount();
-		
-		boolean[][] checked = new boolean[gridSize][gridSize]; // 0 means unchecked
 	
+		boolean[][] checked = new boolean[gridSize][gridSize]; // 0 means unchecked
+		
 		ArrayList<Point> vect = new ArrayList<Point>();
 		ArrayList<State> states = new ArrayList<State>();
 		
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
-				if(e.getBlack(i,j) == false) { // this tile is white
+	
+				if(e.getBlack(i,j) == false && (checkTouch(i,j,e.getMapBlack())<1)) { // this tile is white
 					int value = map[i][j];
 					vect.add(new Point(i,j));
 					
@@ -213,19 +231,34 @@ class GridPane extends JPanel {
 						}
 					} // z for
 					
+					if(vect.size() == 1) {
+						notColiding[i][j] = true;
+					}
+					
+					
 					if(vect.size() > 1) { // if there is collision, make other states
 						for(int m = 0; m < vect.size(); m++) {
+							
+							int[][] mapState = new int[gridSize][gridSize]; // 0 - white, 1 - black, 2-green
+							for(int z1=0; z1<gridSize; ++z1) {
+								for(int z2=0; z2<gridSize; ++z2) {
+									mapState[z1][z2] = 0; }}
 							
 							boolean[][] newMapBlack = new boolean[gridSize][gridSize]; // getting map for child
 							for (int k = 0; k < gridSize; k++) {
 								for (int x = 0; x < gridSize; x++) {
-									if(e.getBlack(k,x) == true)
+									if(e.getBlack(k,x) == true) {
 										newMapBlack[k][x] = true;
-									else 
+										mapState[k][x] = 1;
+									}
+									else {
 										newMapBlack[k][x] = false;
+									}
 								}
 							}
 							newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
+							mapState[vect.get(m).x][vect.get(m).y] = 1; // setting him black
+							
 							
 							for (int k = 0; k < gridSize; k++) {
 								System.out.println("");
@@ -236,22 +269,24 @@ class GridPane extends JPanel {
 										System.out.print("0 ");
 								}
 							}
-							System.out.println("x: " + vect.get(m).x + " y: " + vect.get(m).y);
+							//System.out.println("x: " + vect.get(m).x + " y: " + vect.get(m).y);
 							
 							int isTerminal = 0;
-							if(checkCut(newMapBlack, e.getBlackCount()+1) || checkTouch(vect.get(m).x, vect.get(m).y, newMapBlack) != 0)
+							if(checkCut(newMapBlack, e.getBlackCount()+1) || checkTouch(vect.get(m).x, vect.get(m).y, newMapBlack) != 0 || !checkGreens(mapState))
 								isTerminal = 2;
 							else if(check(newMapBlack)) 
 								isTerminal = 1;
 
 							
-							System.out.println("x: " + vect.get(m).x+ " y: "+ vect.get(m).y + " terminal: " + isTerminal);
+							int weight = checkNeighbours(vect.get(m).x, vect.get(m).y);
+						
+							System.out.println("\n wewx: " + vect.get(m).x+ " y: "+ vect.get(m).y + " terminal: " + isTerminal+" weight: "+weight);
 							
 							int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
 							
 							if(isTerminal != 2)
 								states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
-									e.getBlackCount()+1, vect.size(), isTerminal, sidesCollision));
+									e.getBlackCount()+1, vect.size(), isTerminal, sidesCollision, weight));
 						}
 					}
 					System.out.println(" ");
@@ -265,13 +300,137 @@ class GridPane extends JPanel {
 		return states;
 	}
 	
+	/* every black cell has 4 adjacent neighbors which are set green and can't be put black anymore
+	   so there can't be two equal numbers in one row or column adjacent to black cells*/
+	private boolean checkGreens(int[][] mapState) {
+
+		for(int i=0; i<gridSize; ++i) {
+			for(int j=0; j<gridSize; ++j) {
+				
+				if(mapState[i][j] == 1) {
+					
+					if(i!=0) {
+						mapState[i-1][j] = 2;
+					}
+					if(i!=gridSize-1) {
+						mapState[i+1][j] = 2;
+					}
+					if(j!=0) {
+						mapState[i][j-1] = 2;
+					}
+					if(j!=gridSize-1) {
+						mapState[i][j+1] = 2;
+					}
+				}
+			}
+		}
+		
+		for(int i=0; i<gridSize; ++i) {
+			for(int j=0; j<gridSize; ++j) {
+				
+				if(mapState[i][j]==2) {
+					
+					if(i!=gridSize - 1) {
+						for(int x=i+1; x < gridSize; ++x) {
+							
+							if(mapState[x][j] == 2) {
+								if(map[x][j] == map[i][j])
+									return false;
+							}
+						}
+					}
+					
+					if(j!=gridSize - 1) {
+						for(int x=j+1; x < gridSize; ++x) {
+							if(mapState[i][x] == 2) {
+								if(map[i][x] == map[i][j])
+									return false;
+							}
+						}
+					}	
+				}
+			}
+		}
+		return true;
+	}
+	
+	
+	
+	private int checkNeighbours(int i, int j) {
+		int k = 1;
+		
+		if(i != 0) {		
+			if( map[i][j] == map[i-1][j]) {
+				k++;
+				
+				if(j!=0 && map[i][j] == map[i-1][j-1] ) {
+					k++;
+				}
+
+				if(j!=gridSize-1 && map[i][j] == map[i-1][j+1] ) {
+					k++;
+				}
+			}
+		}
+		
+		if(i != gridSize-1) {
+			if( map[i][j] == map[i+1][j]) {
+				k++;
+				
+				if(j!=0 && map[i][j] == map[i+1][j-1] ) {
+					k++;
+				}
+
+				if(j!=gridSize-1 && map[i][j] == map[i+1][j+1] ) {
+					k++;
+				}
+			}
+		}
+		
+		if(j != 0) {
+			if( map[i][j] == map[i][j-1]) {
+				k++;
+				
+				if(i!=0 && map[i][j] == map[i-1][j-1] ) {
+					k++;
+				}
+
+				if(i!=gridSize-1 && map[i][j] == map[i+1][j-1] ) {
+					k++;
+				}
+			}
+		}
+		
+		if(j != gridSize-1) {
+			if( map[i][j] == map[i][j+1]) {
+				k++;
+				
+				if(i!=0 && map[i][j] == map[i-1][j+1] ) {
+					k++;
+				}
+
+				if(i!=gridSize-1 && map[i][j] == map[i+1][j+1] ) {
+					k++;
+				}
+
+			}
+
+		}
+		return k;
+	}
+	
+
 	private int checkSidesCollision(boolean[][] newMapBlack, int x, int y) {
 		int collisions = 0;
 		
 		int i = x + 1;
 		while(i < gridSize) {
 			if(newMapBlack[i][y] == false && map[i][y] == map[x][y]) {
-				collisions++;
+				/*if(i==x+1)
+					collisions+=2;
+				else
+					collisions++;
+				
 				break;
 			}
 			i++;
@@ -279,7 +438,10 @@ class GridPane extends JPanel {
 		i = x - 1;
 		while(i >= 0) {
 			if(newMapBlack[i][y] == false && map[i][y] == map[x][y]) {
-				collisions++;
+				/*if(i==x-1)
+					collisions+=2;
+				else*/
+					collisions++;
 				break;
 			}
 			i--;
@@ -287,15 +449,21 @@ class GridPane extends JPanel {
 		i = y + 1;
 		while(i < gridSize) {
 			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
-				collisions++;
+				/*if(i==y+1)
+					collisions+=2;
+				else*/
+					collisions++;
 				break;
 			}
 			i++;
 		}
-		i = x - 1;
+		i = y - 1; //by³ x zamiast y
 		while(i >= 0) {
 			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
-				collisions++;
+			/*	if(i==y-1)
+					collisions+=2;
+				else*/
+					collisions++;
 				break;
 			}
 			i--;
@@ -442,7 +610,6 @@ class GridPane extends JPanel {
 			if(clicked[x][y+1] == true)
 				withHowMany++;
 		}
-		
 		return withHowMany;
 	}
 	
@@ -532,6 +699,22 @@ class GridPane extends JPanel {
 			howManyBlack--;										// clear the board
 		}
 		
+		for(int i=0; i<gridSize-2; ++i){
+			for(int j=0; j<gridSize-2; ++j) {
+				
+				if(map[i][j]==map[i][j+1]) {
+					if(map[i][j+1]==map[i][j+2]) {
+						System.out.println("trojka poziom: "+i+", "+j);
+					}
+				}
+				
+				if(map[i][j]==map[i+1][j]) {
+					if(map[i+1][j]==map[i+2][j]) {
+						System.out.println("trojka pion: "+i+", "+j);
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
