@@ -9,31 +9,39 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Game extends JFrame {
+public final class Game {
 
-	private static final long serialVersionUID = -6428442114002141800L;
+	private static JFrame gameFrame;
+	
+	private Game() {
+		
+	}
 
-	public Game() {
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setVisible(true);
-		setLayout(new BorderLayout());
-		setTitle("Hitori");
-		setResizable(false);
-		setLocationRelativeTo(null);
-		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public static JFrame getGameFrame() {
+		return gameFrame;
 	}
 	
-	public void buildGrid(int gridSize) {
+	public static void buildGrid(int gridSize) {
+		gameFrame = new JFrame();
+		gameFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		gameFrame.setVisible(true);
+		gameFrame.setLayout(new BorderLayout());
+		gameFrame.setTitle("Hitori");
+		gameFrame.setResizable(false);
+		gameFrame.setLocationRelativeTo(null);
+		gameFrame.setVisible(true);
+		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		JPanel gamePane = new JPanel(new GridBagLayout());
-		gamePane.setSize(screenSize.width, screenSize.height - 48);
+		JPanel gridPane = new GridPane(gridSize);
+		JPanel settingsPane = new SettingsPane(gridSize);
 		GridBagConstraints gbc = new GridBagConstraints();
+		gamePane.setSize(screenSize.width, screenSize.height - 48);
 		gbc.gridx = 0;
         gbc.gridy = 0;
-        gamePane.add(new GridPane(gridSize), gbc);
+        gamePane.add(gridPane, gbc);
         gbc.gridx++;
-        gamePane.add(new SettingsPane(gridSize), gbc);
-        add(gamePane);
+        gamePane.add(settingsPane, gbc);
+        gameFrame.add(gamePane);
 	}
 }

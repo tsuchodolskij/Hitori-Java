@@ -73,10 +73,10 @@ class GridPane extends JPanel {
 		}
 	}
 	
-	public GridPane(int gridS) {
+	public GridPane(int gridSize) {
 		touch = 0;
 		cut = false;
-		gridSize = gridS;
+		this.gridSize = gridSize;
 		howManyBlack = 0;
 		cellGrid = new Cell[gridSize][gridSize];
 		setLayout(new GridLayout(gridSize, gridSize));
@@ -429,7 +429,7 @@ class GridPane extends JPanel {
 				/*if(i==x+1)
 					collisions+=2;
 				else
-					collisions++;
+					collisions++;*/
 				
 				break;
 			}
@@ -457,7 +457,7 @@ class GridPane extends JPanel {
 			}
 			i++;
 		}
-		i = y - 1; //by³ x zamiast y
+		i = y - 1; //byï¿½ x zamiast y
 		while(i >= 0) {
 			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
 			/*	if(i==y-1)
@@ -590,7 +590,7 @@ class GridPane extends JPanel {
 	}
 	
 	
-	// retrun != if there is a touch
+	// return != if there is a touch
 	private int checkTouch(int x, int y, boolean[][] clicked) {
 		int withHowMany = 0;
 		

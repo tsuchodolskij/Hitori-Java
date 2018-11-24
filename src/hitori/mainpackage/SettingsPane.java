@@ -26,12 +26,23 @@ class SettingsPane extends JPanel {
 	JLabel gridSizeLabel = new JLabel("Choose the grid size:");
 	//JLabel errorLabel = new JLabel(errorMsg);
 	JButton buildGridButton = new JButton("Build Grid");
+	JButton loadGridButton = new JButton("Load Grid");
 	JButton checkButton = new JButton("Check");
 	JButton solveButton = new JButton("Solve");
 	JButton exitButton = new JButton("Exit");
 	JComboBox<String> gridSizeBox;
 	
 	class buildGridListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if ((String) gridSizeBox.getSelectedItem() != "") {
+				Game.getGameFrame().dispose();
+				Game.buildGrid(gridSizeBox.getSelectedIndex() + 3);
+			 }
+		}
+	}
+	
+	class loadGridListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			 
@@ -55,7 +66,8 @@ class SettingsPane extends JPanel {
 	 class exitListener implements ActionListener {
 		 @Override
 		 public void actionPerformed(ActionEvent e) {
-			 
+			 Game.getGameFrame().dispose();
+			 System.exit(0);
 		}
 	 }
 	
@@ -76,15 +88,19 @@ class SettingsPane extends JPanel {
 		add(buildGridButton);
 		buildGridButton.addActionListener(new buildGridListener());
 		
-		checkButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 135, 110, 25);
+		loadGridButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 105, 110, 25);
+		add(loadGridButton);
+		loadGridButton.addActionListener(new loadGridListener());
+		
+		checkButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 165, 110, 25);
 		add(checkButton);
 		checkButton.addActionListener(new checkListener());
 		
-		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 190, 110, 25);
+		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 220, 110, 25);
 		add(solveButton);
 		solveButton.addActionListener(new solveListener());
 		
-		exitButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 220, 110, 25);
+		exitButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 250, 110, 25);
 		add(exitButton);
 		exitButton.addActionListener(new exitListener());
 	}

@@ -32,8 +32,7 @@ public class Hitori extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			 if ((String) gridSizeBox.getSelectedItem() != "") {
 				 dispose();
-				 Game getStarted = new Game();
-				 getStarted.buildGrid(gridSizeBox.getSelectedIndex() + 3);
+				 Game.buildGrid(gridSizeBox.getSelectedIndex() + 3);
 			 }
 			 errorLabel.setText("The grid size has not been chosen!");
 		}
