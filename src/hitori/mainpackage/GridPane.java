@@ -429,6 +429,7 @@ class GridPane extends JPanel {
 				/*if(i==x+1)
 					collisions+=2;
 				else
+				*/
 					collisions++;
 				
 				break;
