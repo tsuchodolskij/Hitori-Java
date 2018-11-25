@@ -27,17 +27,16 @@ public class State {
 		this.weight = weight;
 		
 		
-		
-		cost = gridSize*gridSize + 0.5*chainLength;
+		cost = gridSize*gridSize;
 		if(isTerminal == 2)
 			cost *= gridSize*gridSize;
 		
-		heuristic = (gridSize*gridSize - 5*blackCount) - sidesCollisions;
+		heuristic = (gridSize*gridSize - 2*blackCount);
 		if(isTerminal == 1)
 			heuristic = 0;
-		hc = heuristic + cost - 2*weight;
+		hc = heuristic + cost;
 		
-		System.out.println("new state hc: "+hc);
+		System.out.println("\nNew state hc: "+hc);
 	}
 	
 	public double getHC() {

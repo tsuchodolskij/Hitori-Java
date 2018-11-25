@@ -88,11 +88,13 @@ class GridPane extends JPanel {
 
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
+				
 				cellGrid[i][j] = new Cell(map[i][j], i, j);
 				if (gridSize <= 10)
 					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 24));
 				else if (gridSize <= 20)
 					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 18));
+				
 				cellGrid[i][j].setBackground(Color.WHITE);
 				cellGrid[i][j].setBorder(new LineBorder(Color.BLACK, 1));
 				cellGrid[i][j].addActionListener(new ButtonListener());
@@ -110,9 +112,6 @@ class GridPane extends JPanel {
 			System.out.println();
 		}
 			
-		
-		
-		//expand1();
 		aStar();
 	}
 /*--------------------------------------      A*      -------------------------------------------------------*/	
@@ -231,11 +230,7 @@ class GridPane extends JPanel {
 						}
 					} // z for
 					
-					if(vect.size() == 1) {
-						notColiding[i][j] = true;
-					}
-					
-					
+				
 					if(vect.size() > 1) { // if there is collision, make other states
 						for(int m = 0; m < vect.size(); m++) {
 							
@@ -259,39 +254,51 @@ class GridPane extends JPanel {
 							newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
 							mapState[vect.get(m).x][vect.get(m).y] = 1; // setting him black
 							
+							System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 							
-							for (int k = 0; k < gridSize; k++) {
-								System.out.println("");
-								for (int x = 0; x < gridSize; x++) {
-									if(newMapBlack[k][x] == true)
-										System.out.print("1 ");
-									else 
-										System.out.print("0 ");
+							setGreens(mapState);
+							int isTerminal = 0;
+							
+							if(checkAll(vect.get(m).x, vect.get(m).y, e.getBlackCount(), newMapBlack, mapState))
+							{
+								
+								int new_blacks = eliminateOther(mapState, newMapBlack, e.getBlackCount());
+								if(new_blacks != -1)
+								{
+								
+									System.out.println("\nnewblacks: "+new_blacks);
+									
+									for (int k = 0; k < gridSize; k++) {
+										System.out.println("");
+										for (int x = 0; x < gridSize; x++) {
+											if(newMapBlack[k][x] == true)
+												System.out.print("1 ");
+											else 
+												System.out.print("0 ");
+										}
+									}
+									new_blacks++;
+								
+								
+									if(check(newMapBlack)) 
+										isTerminal = 1;
+		
+									
+									int weight = 0;// = checkNeighbours(vect.get(m).x, vect.get(m).y);
+								
+									//System.out.println("\n\nNew state: x:" + vect.get(m).x+ " y:"+ vect.get(m).y + " terminal:" + isTerminal+" weight: "+weight);
+									
+									int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
+									
+									states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
+										e.getBlackCount()+new_blacks, vect.size(), isTerminal, sidesCollision, weight));
 								}
 							}
-							//System.out.println("x: " + vect.get(m).x + " y: " + vect.get(m).y);
-							
-							int isTerminal = 0;
-							if(checkCut(newMapBlack, e.getBlackCount()+1) || checkTouch(vect.get(m).x, vect.get(m).y, newMapBlack) != 0 || !checkGreens(mapState))
-								isTerminal = 2;
-							else if(check(newMapBlack)) 
-								isTerminal = 1;
-
-							
-							int weight = checkNeighbours(vect.get(m).x, vect.get(m).y);
-						
-							System.out.println("\n wewx: " + vect.get(m).x+ " y: "+ vect.get(m).y + " terminal: " + isTerminal+" weight: "+weight);
-							
-							int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
-							
-							if(isTerminal != 2)
-								states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
-									e.getBlackCount()+1, vect.size(), isTerminal, sidesCollision, weight));
-						}
+						}		
 					}
 					System.out.println(" ");
 					
-					vect.clear(); // every value like first was find, so prepare for another loop
+					vect.clear(); // every value like first was found, so prepare for another loop
 					
 				} // if
 			} // j for
@@ -300,10 +307,9 @@ class GridPane extends JPanel {
 		return states;
 	}
 	
-	/* every black cell has 4 adjacent neighbors which are set green and can't be put black anymore
-	   so there can't be two equal numbers in one row or column adjacent to black cells*/
-	private boolean checkGreens(int[][] mapState) {
-
+	/* cover neighbors of black as greens */
+	
+	private void setGreens(int [][] mapState) {
 		for(int i=0; i<gridSize; ++i) {
 			for(int j=0; j<gridSize; ++j) {
 				
@@ -324,7 +330,13 @@ class GridPane extends JPanel {
 				}
 			}
 		}
-		
+	}	
+	
+	/* every black cell has 4 adjacent neighbors which are set green and can't be put black anymore
+	   so there can't be two equal numbers in one row or column adjacent to black cells*/
+	
+	private boolean checkGreens(int[][] mapState) {
+	
 		for(int i=0; i<gridSize; ++i) {
 			for(int j=0; j<gridSize; ++j) {
 				
@@ -332,6 +344,16 @@ class GridPane extends JPanel {
 					
 					if(i!=gridSize - 1) {
 						for(int x=i+1; x < gridSize; ++x) {
+							
+							if(mapState[x][j] == 2) {
+								if(map[x][j] == map[i][j])
+									return false;
+							}
+						}
+					}
+					
+					if(i!=0) {
+						for(int x=i-1; x >= 0; --x) {
 							
 							if(mapState[x][j] == 2) {
 								if(map[x][j] == map[i][j])
@@ -348,14 +370,202 @@ class GridPane extends JPanel {
 							}
 						}
 					}	
+					
+					if(j!=0) {
+						for(int x=j-1; x >= 0; --x) {
+							if(mapState[i][x] == 2) {
+								if(map[i][x] == map[i][j])
+									return false;
+							}
+						}
+					}	
 				}
 			}
 		}
 		return true;
 	}
+		
 	
+	/* eliminate all possible cells for this state */
 	
+	private int eliminateOther(int [][] mapState, boolean[][] mapBlack, int actual_black) {		
+		
+		int new_blacks = 0;
+		for(int twice = 0; twice < 2; ++twice) {
+			for(int i=0; i<gridSize; ++i) {
+				for(int j=0; j<gridSize; ++j) {
+					
+					if(mapState[i][j]==2) {
+						
+						if(i!=gridSize - 1) {
+							for(int x=i+1; x < gridSize; ++x) {
+								
+								if(map[x][j] == map[i][j]) {
+									
+									if(mapState[x][j] == 0){
+										
+										mapBlack[x][j] = true;
+										new_blacks++;
+										mapState[x][j] = 1;
+										if(x!=0) {
+											mapState[x-1][j] = 2;
+										}
+										if(x!=gridSize-1) {
+											mapState[x+1][j] = 2;
+										}
+										if(j!=0) {
+											mapState[x][j-1] = 2;
+										}
+										if(j!=gridSize-1) {
+											mapState[x][j+1] = 2;
+										}
+									
+										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState)){	
+											
+											mapBlack[x][j] = false;
+											new_blacks--;
+											return -1;
+										}
+										//System.out.println("\nW dol: "+x+" "+j);
+									} // if mapState
+								} // if map
+							} // for
+						} // if i
+						
+						if(i!=0) {
+							for(int x=i-1; x >= 0; --x) {
 	
+								if(map[x][j] == map[i][j]) {
+									 
+									if(mapState[x][j] == 0) {
+										
+										mapBlack[x][j] = true;
+										new_blacks++;
+										mapState[x][j] = 1;
+										if(x!=0) {
+											mapState[x-1][j] = 2;
+										}
+										if(x!=gridSize-1) {
+											mapState[x+1][j] = 2;
+										}
+										if(j!=0) {
+											mapState[x][j-1] = 2;
+										}
+										if(j!=gridSize-1) {
+											mapState[x][j+1] = 2;
+										}
+										
+										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState))
+										{	mapBlack[x][j] = false;
+											new_blacks--;
+											return -1;
+										}
+										//System.out.println("W gore: "+x+" "+j);
+									} // if mapState
+								} // if map
+							} // for
+						} // if i
+						
+						if(j!=gridSize - 1) {
+							for(int x=j+1; x < gridSize; ++x) {
+								
+								if(map[i][x] == map[i][j]) {
+									
+									if(mapState[i][x] == 0) {
+										
+										mapBlack[i][x] = true;
+										new_blacks++;
+										mapState[i][x] = 1;
+										if(i!=0) {
+											mapState[i-1][x] = 2;
+										}
+										if(i!=gridSize-1) {
+											mapState[i+1][x] = 2;
+										}
+										if(x!=0) {
+											mapState[i][x-1] = 2;
+										}
+										if(x!=gridSize-1) {
+											mapState[i][x+1] = 2;
+										}
+										
+										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState)) {
+											
+											mapBlack[i][x] = false;
+											new_blacks--;
+											return -1;
+										}	
+										//System.out.println("W prawo "+i+" "+x);
+									} // if mapState
+								} // if map
+							} // for
+						} // if j	
+						
+	
+						if(j!=0) {
+							for(int x=j-1; x >= 0; --x) {
+	
+								if(map[i][x] == map[i][j]) {
+									
+									if(mapState[i][x] == 0) {
+										
+										mapBlack[i][x] = true;
+										new_blacks++;
+										mapState[i][x] = 1;
+										if(i!=0) {
+											mapState[i-1][x] = 2;
+										}
+										if(i!=gridSize-1) {
+											mapState[i+1][x] = 2;
+										}
+										if(x!=0) {
+											mapState[i][x-1] = 2;
+										}
+										if(x!=gridSize-1) {
+											mapState[i][x+1] = 2;
+										}
+										
+										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState)) {
+											
+											mapBlack[i][x] = false;
+											new_blacks--;
+											return -1;
+										}
+										//System.out.println("W lewo: "+i+" "+x);
+									} // if mapState
+									
+								} // if map
+							} // for
+						} // if j	
+					} // if state==2
+				} //for j
+			} // for i
+		} // for twice
+		return new_blacks;
+	}
+	
+	/* method to check all cases if cell can be covered black */
+	
+	private boolean checkAll(int x, int y, int nrBlack, boolean[][] mapBlack, int[][] mapState) {
+		
+		nrBlack++;
+		if(checkTouch(x, y, mapBlack)!=0) {
+			//System.out.println("checkTouch "+x+" "+y);
+			return false;
+		}
+		if(checkCut(mapBlack, nrBlack)) {
+			//System.out.println("checkCut "+x+" "+y+" nrblack: "+nrBlack);
+			return false;
+		}
+		if(!checkGreens(mapState)) {
+			//System.out.println("checkGreens "+x+" "+y+" nrblack: "+nrBlack);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/*
 	private int checkNeighbours(int i, int j) {
 		int k = 1;
 		
@@ -418,8 +628,7 @@ class GridPane extends JPanel {
 		}
 		return k;
 	}
-	
-
+*/
 	private int checkSidesCollision(boolean[][] newMapBlack, int x, int y) {
 		int collisions = 0;
 		
@@ -470,7 +679,6 @@ class GridPane extends JPanel {
 			}
 			i--;
 		}
-		
 		return collisions;
 	}
 	
@@ -531,11 +739,11 @@ class GridPane extends JPanel {
 				}
 			}
 		}
-		
 		return true;
 	}
 	
 	//return true if there is cut of white tiles
+	
 	private boolean checkCut(boolean[][] clicked, int howManyBlack) {
 		ArrayList<Point> points = new ArrayList<Point>();
 		boolean[][] visited = new boolean[gridSize][gridSize];
@@ -578,21 +786,16 @@ class GridPane extends JPanel {
 				//System.out.println("Dodaje: " + x + " "+ (y+1));
 			}
 		}
-		
-		/*for(int i = 0; i < points.size(); i++) {
-			System.out.println(points.get(i).x + " " + points.get(i).y);
-		}*/
-
-		//System.out.println("points.size(): " + points.size());
-		//System.out.println("(gridSize*gridSize) - howManyBlack: " + ((gridSize*gridSize) - howManyBlack));
 
 		if(points.size() == ((gridSize*gridSize) - howManyBlack))
 			return false;
-		else return true;
+		else 
+			return true;
 	}
 	
 	
-	// return != if there is a touch
+	// return >0 if there is a touch
+	
 	private int checkTouch(int x, int y, boolean[][] clicked) {
 		int withHowMany = 0;
 		
