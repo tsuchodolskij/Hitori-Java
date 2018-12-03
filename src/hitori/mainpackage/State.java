@@ -27,7 +27,7 @@ public class State {
 		this.weight = weight;
 		
 		
-		cost = gridSize*gridSize;
+		cost = gridSize*gridSize + chainLength;
 		if(isTerminal == 2)
 			cost *= gridSize*gridSize;
 		
@@ -57,5 +57,8 @@ public class State {
 	
 	public int getIsTerminal() {
 		return isTerminal;
+	}
+	public void setCost(int cost) {
+		this.cost = cost;
 	}
 }

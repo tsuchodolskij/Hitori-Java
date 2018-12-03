@@ -124,7 +124,8 @@ class GridPane extends JPanel {
 		
 		// expanding zero state
 		boolean [][] newMapBlack = checkNeighbors();
-		ArrayList<State> tmp = expand(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0));
+		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0));
+		ArrayList<State> tmp = expand(states.get(0));
 		for(State i : tmp) {
 			states.add(i);
 			//System.out.println("x: " + i.x+ " y: "+ i.y);
@@ -147,7 +148,7 @@ class GridPane extends JPanel {
 			System.out.println("HC:" + lowestHC.getHC());
 			for (int i = 0; i < states.size(); i++) {
 				//System.out.println("HC:" + states.get(i).getHC());
-				if(states.get(i).getHC() < lowestHC.getHC()) {
+				if(states.size() > 0 && states.get(i).getHC() < lowestHC.getHC()) {
 					lowestHC = states.get(i);
 					lowestIndex = i;
 				}
@@ -176,9 +177,10 @@ class GridPane extends JPanel {
 			
 			states.remove(lowestIndex);			// deleting lowestHC from states list, because i expand him
 			tmp = expand(lowestHC);
-			for(State i : tmp) {     			// adding every son of lowestHC
-				states.add(i);
-			}
+			if(tmp != null)
+				for(State i : tmp) {     			// adding every son of lowestHC
+					states.add(i);
+				}
 			
 			updateMap(lowestHC.getMapBlack());
 		}
@@ -234,8 +236,9 @@ class GridPane extends JPanel {
 						}
 					} // z for
 					
-				
+					
 					if(vect.size() > 1) { // if there is collision, make other states
+						int terminalStates = 0;
 						for(int m = 0; m < vect.size(); m++) {
 							
 							int[][] mapState = new int[gridSize][gridSize]; // 0 - white, 1 - black, 2-green
@@ -256,8 +259,7 @@ class GridPane extends JPanel {
 								}
 							}
 							newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
-							
-							mapState[vect.get(m).x][vect.get(m).y] = 1; // setting him black
+							mapState[vect.get(m).x][vect.get(m).y] = 1;
 							
 							System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 							
@@ -271,15 +273,23 @@ class GridPane extends JPanel {
 								if(new_blacks != -1)
 								{
 								
-									System.out.println("\nnewblacks: "+new_blacks);
+									System.out.println("Newblacks: "+new_blacks);
 									
 									for (int k = 0; k < gridSize; k++) {
 										System.out.println("");
 										for (int x = 0; x < gridSize; x++) {
-											if(newMapBlack[k][x] == true)
-												System.out.print("1 ");
-											else 
-												System.out.print("0 ");
+											if(newMapBlack[k][x] == true) {
+												if(map[k][x]>9)
+													System.out.print("("+map[k][x]+") ");
+												else
+													System.out.print(" ("+map[k][x]+") ");
+											}
+											else { 
+												if(map[k][x]>9)
+													System.out.print(" "+map[k][x]+"  ");
+												else
+													System.out.print("  "+map[k][x]+"  ");
+											}
 										}
 									}
 									new_blacks++;
@@ -287,20 +297,22 @@ class GridPane extends JPanel {
 									if(check(newMapBlack)) 
 										isTerminal = 1;
 									
-									// = checkNeighbours(vect.get(m).x, vect.get(m).y);
-								
-									//System.out.println("\n\nNew state: x:" + vect.get(m).x+ " y:"+ vect.get(m).y + " terminal:" + isTerminal+" weight: "+weight);
-									
 									int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
 									
+									terminalStates++;
 									states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
 										e.getBlackCount()+new_blacks, vect.size(), isTerminal, sidesCollision, weight));
 								}
 							}
-						}		
+							
+						}	
+						if(terminalStates == 0) {
+							e.setCost(1000);
+							return null;
+						}
 					}
-					System.out.println(" ");
-					
+					//System.out.println(" ");
+				
 					vect.clear(); // every value like first was found, so prepare for another loop
 					
 				} // if
@@ -615,31 +627,41 @@ class GridPane extends JPanel {
 					
 					if(j<gridSize-2 && map[i][j] == map[i][j+2]) { // triplet
 						
-						newMapBlack[i][j] = newMapBlack[i][j+2] = checked[i][j+2] = true;
+						newMapBlack[i][j] = newMapBlack[i][j+2] = true;
 						mapState[i][j] = mapState[i][j+2] = 1;
-						howManyBlack+=2;
+						if(!checked[i][j])
+							howManyBlack++;
+						if(!checked[i][j+2])
+							howManyBlack++;
+						checked[i][j] = checked[i][j+2] = true;
+						
 						j+=2;
-					//	System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
+						//System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
 					}
 					
 					for(int k = j+2; k < gridSize; ++k) {
 						if(!checked[i][k] && map[i][k] == map[i][j]) { // para/triplet + 
-							newMapBlack[i][k] = checked[i][k] = true;
+							newMapBlack[i][k] = true;
 							mapState[i][k] = 1;
-							howManyBlack++;
-					//		System.out.println("POZ-przod-do pary: "+i+" "+j+" black: "+howManyBlack);
+							if(!checked[i][k])
+								howManyBlack++;
+							
+							checked[i][k] = true;
+							//System.out.println("POZ-przod-do pary: "+i+" "+j+" black: "+howManyBlack);
 						}
 					}
 					
 					for(int k = j-2; k >= 0; --k) {
 						if(!checked[i][k] && map[i][k] == map[i][j]) { // para/triplet + 
-							newMapBlack[i][k] = checked[i][k] = true;
+							newMapBlack[i][k] = true;
 							mapState[i][k] = 1;
-							howManyBlack++;
-						//	System.out.println("POZ-tyl-do pary: "+i+" "+j+" black: "+howManyBlack);
+							if(!checked[i][k])
+								howManyBlack++;
+							
+							checked[i][k] = true;
+							//System.out.println("POZ-tyl-do pary: "+i+" "+j+" black: "+howManyBlack);
 						}
 					}
-					checked[i][j+1] = true;
 				}
 				
 				if(map[i][j] == map[i+1][j]) {
@@ -648,35 +670,43 @@ class GridPane extends JPanel {
 					if(i<gridSize-2 && map[i][j] == map[i+2][j]) {
 						
 						
-						newMapBlack[i][j] = newMapBlack[i+2][j] = checked[i+2][j] = true;
+						newMapBlack[i][j] = newMapBlack[i+2][j] = true;
 						mapState[i][j] = mapState[i+2][j] = 1;
-						howManyBlack+=2;
+						if(!checked[i][j])
+							howManyBlack++;
+						if(!checked[i+2][j])
+							howManyBlack++;
+						checked[i][j] = checked[i+2][j] = true;
 						tmp++;
-					//	System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
+						//System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
 					}
 					
 					for(int k = tmp+3; k < gridSize; ++k) {
 						if(!checked[k][j] && map[k][j] == map[i][j]) { // para/triplet + 
-							newMapBlack[k][j] = checked[k][j] = true;
+							newMapBlack[k][j] = true;
 							mapState[k][j] = 1;
-							howManyBlack++;
-					//		System.out.println("POZ-gora-do pary: "+i+" "+j+" black: "+howManyBlack);
+							if(!checked[k][j])
+								howManyBlack++;
+							
+							checked[i][k] = true;
+							//System.out.println("POZ-gora-do pary: "+i+" "+j+" black: "+howManyBlack);
 
 						}
 					}
 					
 					for(int k = i-2; k >= 0; --k) {
 						if(!checked[k][j] && map[k][j] == map[i][j]) { // para/triplet + 
-							newMapBlack[k][j] = checked[k][j] = true;
+							newMapBlack[k][j] = true;
 							mapState[k][j] = 1;
-							howManyBlack++;
-						//	System.out.println("POZ-dol-do pary: "+i+" "+j+" black: "+howManyBlack);
+							if(!checked[k][j])
+								howManyBlack++;
+							
+							checked[i][k] = true;
+							//System.out.println("POZ-dol-do pary: "+i+" "+j+" black: "+howManyBlack);
 
 						}
 					}
-					checked[i+1][j] = true;
 				}
-				checked[i][j] = true;
 			}
 		}
 		System.out.println("Trojki: "+howManyBlack);
