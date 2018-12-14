@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -26,6 +27,8 @@ class GridPane extends JPanel {
 	private boolean cut;
 	
 	private boolean[][]notColiding; // cells with values that don't collide with anything
+	
+	private boolean [][]startingMap; 
 	
 	class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -114,8 +117,31 @@ class GridPane extends JPanel {
 			}
 			System.out.println();
 		}
-			
-		aStar();
+	
+		startingMap = checkNeighbors();
+		updateMap(startingMap);
+		Thread thread = new Thread() {
+	        @Override
+	        public void run() {
+	            try {
+	                Thread.sleep(3000);
+	            } catch (InterruptedException e) {
+	            }
+
+	            runOnUiThread(new Runnable() {
+	                @Override
+	                public void run() {
+	                    // Do some stuff
+	                }
+	            });
+	        }
+	    };
+	    thread.start(); //start the thread
+		
+	}
+protected void runOnUiThread(Runnable runnable) {
+		// TODO Auto-generated method stub
+	aStar();
 	}
 /*--------------------------------------      A*      -------------------------------------------------------*/	
 	private void aStar() {
@@ -123,27 +149,19 @@ class GridPane extends JPanel {
 		ArrayList<State> states = new ArrayList<State>();
 		
 		// expanding zero state
-		boolean [][] newMapBlack = checkNeighbors();
+		boolean [][] newMapBlack = startingMap;
 		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0));
 		ArrayList<State> tmp = expand(states.get(0));
 		for(State i : tmp) {
 			states.add(i);
-			//System.out.println("x: " + i.x+ " y: "+ i.y);
-			
-			/*for (int k = 0; k < gridSize; k++) {
-				System.out.println("");
-				for (int j = 0; j < gridSize; j++) {
-					if(i.getBlack(k,j) == true)
-						System.out.print("1 ");
-					else 
-						System.out.print("0 ");
-				}
-			}*/
 		}
 		
 		while(true) {
 			// finding state with the lowest heuristic and cost
-			State lowestHC = states.get(0);
+			State lowestHC = null;
+			if(states.get(0) != null)
+				lowestHC = states.get(0);
+			
 			int lowestIndex = 0;
 			System.out.println("HC:" + lowestHC.getHC());
 			for (int i = 0; i < states.size(); i++) {
@@ -152,9 +170,12 @@ class GridPane extends JPanel {
 					lowestHC = states.get(i);
 					lowestIndex = i;
 				}
-				/*if(states.get(i).getHC()>lowestHC.getHC()) {
-					states.remove(i);
-				}*/
+			}
+			try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 			System.out.println("LOWEST HC:" + lowestHC.getHC());
@@ -176,6 +197,7 @@ class GridPane extends JPanel {
 			}
 			
 			states.remove(lowestIndex);			// deleting lowestHC from states list, because i expand him
+
 			tmp = expand(lowestHC);
 			if(tmp != null)
 				for(State i : tmp) {     			// adding every son of lowestHC
@@ -183,6 +205,12 @@ class GridPane extends JPanel {
 				}
 			
 			updateMap(lowestHC.getMapBlack());
+			try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		System.out.println("ALGORYTM A* ZAKONCZYL DZIALANIE");
