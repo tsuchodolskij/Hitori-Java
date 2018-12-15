@@ -287,7 +287,7 @@ public class Algorithm {
 		return true;
 	}
 
-	// return true if hitori is solved, no collisions at all
+	// return true if there is no collisions at all
 	public Integer[][] check(boolean[][] clicked, Integer[][] map) {
 		Integer[][] checked = new Integer[gridSize][gridSize];  // initialized with 0, 0-unvisited, 1-with collision, 2-without collision and black, 3 - black 
 		
