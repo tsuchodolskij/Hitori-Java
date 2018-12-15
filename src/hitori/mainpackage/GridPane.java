@@ -18,6 +18,7 @@ class GridPane extends JPanel {
 
 	private static final long serialVersionUID = 5376889337682664210L;
 	
+	private Algorithm alg;
 	private int gridSize;
 	private int howManyBlack;
 	private Integer[][] map;
@@ -42,8 +43,8 @@ class GridPane extends JPanel {
 				howManyBlack--;
 				clicked[x][y] = false;
 				
-				if(checkTouch(x,y, clicked) != 0)
-					touch -= checkTouch(x,y, clicked);
+				if(alg.checkTouch(x,y, clicked) != 0)
+					touch -= alg.checkTouch(x,y, clicked);
 			}
 			else {
 				((Cell) e.getSource()).setBackground(Color.BLACK);
@@ -51,32 +52,35 @@ class GridPane extends JPanel {
 				((Cell) e.getSource()).setPressed(true);
 				howManyBlack++;
 				clicked[x][y] = true;
-				if(checkTouch(x,y, clicked) != 0)
-					touch += checkTouch(x,y, clicked);
-				
-				/*if(checkTouch(x,y) != 0)
-					System.out.println("TILES ARE TOUCHING EACH OTHER");	
-				if(checkCut())
-					System.out.println("WHITE TILES ARE NOT IN ONE PIECE");*/
+				if(alg.checkTouch(x,y, clicked) != 0)
+					touch += alg.checkTouch(x,y, clicked);
 			}
-			//System.out.println("Button value: " + ((Cell) e.getSource()).getValue());
-			//System.out.println("Button x coordinate: " + x);
-			//System.out.println("Button y coordinate: " + y);	
-			//System.out.println("Black tiles: " + howManyBlack);
 			
-			//System.out.println("TOUCH: " + touch);
-			
-			if(checkCut(clicked, howManyBlack) == true)
+			if(alg.checkCut(clicked, howManyBlack) == true)
 				cut = true;
 			else
 				cut = false;
 			
-			if(check(clicked) && touch == 0 && cut == false)
+			boolean collision = false;
+			Integer[][] red = alg.check(clicked, map);
+			for (int i1 = 0; i1 < gridSize; i1++) {
+				for (int j1 = 0; j1 < gridSize; j1++) {
+					if(red[i1][j1] == 1) {
+						collision = true; // if at least one tile is red, it is collision
+						cellGrid[i1][j1].setForeground(Color.RED);
+					}
+					else if(red[i1][j1] == 2) // if tile was white and without collision
+						cellGrid[i1][j1].setForeground(Color.BLACK);
+				}
+			}
+			
+			if(collision == false && touch == 0 && cut == false)
 				System.out.println("GRATULUJE! WYGRALES");
 		}
 	}
 	
 	public GridPane(int gridSize) {
+		alg = new Algorithm(gridSize);
 		touch = 0;
 		cut = false;
 		this.gridSize = gridSize;
@@ -124,7 +128,7 @@ class GridPane extends JPanel {
 	        @Override
 	        public void run() {
 	            try {
-	                Thread.sleep(3000);
+	                Thread.sleep(1000);
 	            } catch (InterruptedException e) {
 	            }
 
@@ -139,10 +143,12 @@ class GridPane extends JPanel {
 	    thread.start(); //start the thread
 		
 	}
-protected void runOnUiThread(Runnable runnable) {
+	
+	protected void runOnUiThread(Runnable runnable) {
 		// TODO Auto-generated method stub
-	aStar();
+		//aStar();
 	}
+	
 /*--------------------------------------      A*      -------------------------------------------------------*/	
 	private void aStar() {
 		
@@ -171,12 +177,12 @@ protected void runOnUiThread(Runnable runnable) {
 					lowestIndex = i;
 				}
 			}
-			try {
+			/*try {
 				TimeUnit.SECONDS.sleep(2);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			
 			System.out.println("LOWEST HC:" + lowestHC.getHC());
 			for (int k = 0; k < gridSize; k++) {
@@ -205,12 +211,12 @@ protected void runOnUiThread(Runnable runnable) {
 				}
 			
 			updateMap(lowestHC.getMapBlack());
-			try {
+			/*try {
 				TimeUnit.SECONDS.sleep(2);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 		
 		System.out.println("ALGORYTM A* ZAKONCZYL DZIALANIE");
@@ -241,7 +247,7 @@ protected void runOnUiThread(Runnable runnable) {
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
 	
-				if(e.getBlack(i,j) == false && (checkTouch(i,j,e.getMapBlack())<1)) { // this tile is white
+				if(e.getBlack(i,j) == false && (alg.checkTouch(i,j,e.getMapBlack())<1)) { // this tile is white
 					int value = map[i][j];
 					vect.add(new Point(i,j));
 					
@@ -291,13 +297,13 @@ protected void runOnUiThread(Runnable runnable) {
 							
 							System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 							
-							setGreens(mapState);
-							int isTerminal = 0, weight = 0;
+							alg.setGreens(mapState);
+							int isTerminal = 1, weight = 0;
 							
-							if(checkAll(vect.get(m).x, vect.get(m).y, e.getBlackCount(), newMapBlack, mapState))
+							if(alg.checkAll(vect.get(m).x, vect.get(m).y, e.getBlackCount(), newMapBlack, mapState, map))
 							{
 								
-								int new_blacks = eliminateOther(mapState, newMapBlack, e.getBlackCount());
+								int new_blacks = alg.eliminateOther(mapState, newMapBlack, e.getBlackCount(), map);
 								if(new_blacks != -1)
 								{
 								
@@ -322,10 +328,17 @@ protected void runOnUiThread(Runnable runnable) {
 									}
 									new_blacks++;
 								
-									if(check(newMapBlack)) 
-										isTerminal = 1;
+									Integer[][] red = alg.check(newMapBlack, map);
+									a : for (int i1 = 0; i1 < gridSize; i1++) {
+										for (int j1 = 0; j1 < gridSize; j1++) {
+											if(red[i1][j1] == 1) {
+												isTerminal = 0; // if at least one tile is red, it is no terminal
+												break a;
+											}
+										}
+									}
 									
-									int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y);
+									int sidesCollision = alg.checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y, map);
 									
 									terminalStates++;
 									states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
@@ -348,295 +361,10 @@ protected void runOnUiThread(Runnable runnable) {
 		} // i for
 		
 		return states;
-	}
-	
-	/* cover neighbors of black as greens */
-	
-	private void setGreens(int [][] mapState) {
-		for(int i=0; i<gridSize; ++i) {
-			for(int j=0; j<gridSize; ++j) {
-				
-				if(mapState[i][j] == 1) {
-					
-					if(i!=0) {
-						mapState[i-1][j] = 2;
-					}
-					if(i!=gridSize-1) {
-						mapState[i+1][j] = 2;
-					}
-					if(j!=0) {
-						mapState[i][j-1] = 2;
-					}
-					if(j!=gridSize-1) {
-						mapState[i][j+1] = 2;
-					}
-				}
-			}
-		}
 	}	
 	
-	/* every black cell has 4 adjacent neighbors which are set green and can't be put black anymore
-	   so there can't be two equal numbers in one row or column adjacent to black cells*/
-	
-	private boolean checkGreens(int[][] mapState) {
-	
-		for(int i=0; i<gridSize; ++i) {
-			for(int j=0; j<gridSize; ++j) {
-				
-				if(mapState[i][j]==2) {
-					
-					if(i!=gridSize - 1) {
-						for(int x=i+1; x < gridSize; ++x) {
-							
-							if(mapState[x][j] == 2) {
-								if(map[x][j] == map[i][j])
-									return false;
-							}
-						}
-					}
-					
-					if(i!=0) {
-						for(int x=i-1; x >= 0; --x) {
-							
-							if(mapState[x][j] == 2) {
-								if(map[x][j] == map[i][j])
-									return false;
-							}
-						}
-					}
-					
-					if(j!=gridSize - 1) {
-						for(int x=j+1; x < gridSize; ++x) {
-							if(mapState[i][x] == 2) {
-								if(map[i][x] == map[i][j])
-									return false;
-							}
-						}
-					}	
-					
-					if(j!=0) {
-						for(int x=j-1; x >= 0; --x) {
-							if(mapState[i][x] == 2) {
-								if(map[i][x] == map[i][j])
-									return false;
-							}
-						}
-					}	
-				}
-			}
-		}
-		return true;
-	}
-		
-	
-	/* eliminate all possible cells for this state */
-	
-	private int eliminateOther(int [][] mapState, boolean[][] mapBlack, int actual_black) {		
-		
-		int new_blacks = 0;
-		for(int twice = 0; twice < 2; ++twice) {
-			for(int i=0; i<gridSize; ++i) {
-				for(int j=0; j<gridSize; ++j) {
-					
-					int go_up = 0;
-					if(mapState[i][j]==2) {
-						
-						if(i!=gridSize - 1) {
-							for(int x=i+1; x < gridSize; ++x) {
-								
-								if(map[x][j] == map[i][j]) {
-									
-									if(mapState[x][j] == 0){
-										
-										
-										mapBlack[x][j] = true;
-										new_blacks++;
-										mapState[x][j] = 1;
-										if(x!=0) {
-											go_up = 1;
-											mapState[x-1][j] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[x+1][j] = 2;
-										}
-										if(j!=0) {
-											mapState[x][j-1] = 2;
-										}
-										if(j!=gridSize-1) {
-											mapState[x][j+1] = 2;
-										}
-									
-										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState)){	
-											
-											mapBlack[x][j] = false;
-											new_blacks--;
-											return -1;
-										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
-											
-										//System.out.println("\nW dol: "+x+" "+j);
-									} // if mapState
-								} // if map
-							} // for
-						} // if i
-						
-						if(i!=0) {
-							for(int x=i-1; x >= 0; --x) {
-	
-								if(map[x][j] == map[i][j]) {
-									 
-									if(mapState[x][j] == 0) {
-										
-										mapBlack[x][j] = true;
-										new_blacks++;
-										mapState[x][j] = 1;
-										if(x!=0) {
-											go_up = 1;
-											mapState[x-1][j] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[x+1][j] = 2;
-										}
-										if(j!=0) {
-											mapState[x][j-1] = 2;
-										}
-										if(j!=gridSize-1) {
-											mapState[x][j+1] = 2;
-										}
-										
-										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState))
-										{	mapBlack[x][j] = false;
-											new_blacks--;
-											return -1;
-										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
-											
-										//System.out.println("W gore: "+x+" "+j);
-									} // if mapState
-								} // if map
-							} // for
-						} // if i
-						
-						if(j!=gridSize - 1) {
-							for(int x=j+1; x < gridSize; ++x) {
-								
-								if(map[i][x] == map[i][j]) {
-									
-									if(mapState[i][x] == 0) {
-										
-										mapBlack[i][x] = true;
-										new_blacks++;
-										mapState[i][x] = 1;
-										if(i!=0) {
-											go_up = 1;
-											mapState[i-1][x] = 2;
-										}
-										if(i!=gridSize-1) {
-											mapState[i+1][x] = 2;
-										}
-										if(x!=0) {
-											mapState[i][x-1] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[i][x+1] = 2;
-										}
-										
-										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState)) {
-											
-											mapBlack[i][x] = false;
-											new_blacks--;
-											return -1;
-										}	
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
-											
-										//System.out.println("W prawo "+i+" "+x);
-									} // if mapState
-								} // if map
-							} // for
-						} // if j	
-						
-	
-						if(j!=0) {
-							for(int x=j-1; x >= 0; --x) {
-	
-								if(map[i][x] == map[i][j]) {
-									
-									if(mapState[i][x] == 0) {
-										
-										mapBlack[i][x] = true;
-										new_blacks++;
-										mapState[i][x] = 1;
-										if(i!=0) {
-											go_up = 1;
-											mapState[i-1][x] = 2;
-										}
-										if(i!=gridSize-1) {
-											mapState[i+1][x] = 2;
-										}
-										if(x!=0) {
-											mapState[i][x-1] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[i][x+1] = 2;
-										}
-										
-										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState)) {
-											
-											mapBlack[i][x] = false;
-											new_blacks--;
-											return -1;
-										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
-											
-										//System.out.println("W lewo: "+i+" "+x);
-									} // if mapState
-									
-								} // if map
-							} // for
-						} // if j	
-					} // if state==2
-				} //for j
-			} // for i
-		} // for twice
-		return new_blacks;
-	}
-	
-	/* method to check all cases if cell can be covered black */
-	
-	private boolean checkAll(int x, int y, int nrBlack, boolean[][] mapBlack, int[][] mapState) {
-		
-		nrBlack++;
-		if(checkTouch(x, y, mapBlack)!=0) {
-			//System.out.println("checkTouch "+x+" "+y);
-			return false;
-		}
-		if(checkCut(mapBlack, nrBlack)) {
-			//System.out.println("checkCut "+x+" "+y+" nrblack: "+nrBlack);
-			return false;
-		}
-		if(!checkGreens(mapState)) {
-			//System.out.println("checkGreens "+x+" "+y+" nrblack: "+nrBlack);
-			return false;
-		}
-		
-		return true;
-	}
-	
-	
+	// PRZYDALO BY SIE DODAC ARGUMENTY DO FUNKCJI, ZEBY NP NIE KORZYSTALO Z HOWMANYBLACK GLOBALNYCH TYLKO MIALO SWOJE LOKALNE O ILE MOZLIWE
 	private boolean[][] checkNeighbors() {
-	
 		int[][] mapState = new int[gridSize][gridSize];
 		boolean[][] newMapBlack = new boolean[gridSize][gridSize];
 		boolean[][] checked = new boolean[gridSize][gridSize];
@@ -748,8 +476,8 @@ protected void runOnUiThread(Runnable runnable) {
 			System.out.println();
 		}
 		
-		setGreens(mapState);
-		howManyBlack+=eliminateOther(mapState, newMapBlack, howManyBlack-1);
+		alg.setGreens(mapState);
+		howManyBlack+=alg.eliminateOther(mapState, newMapBlack, howManyBlack-1, map);
 		
 		System.out.println("Mapa: "+howManyBlack);
 		for(int i=0; i<gridSize; ++i) {
@@ -762,198 +490,10 @@ protected void runOnUiThread(Runnable runnable) {
 			System.out.println();
 		}
 		
-		
 		return newMapBlack;
-	}
-
-	private int checkSidesCollision(boolean[][] newMapBlack, int x, int y) {
-		int collisions = 0;
-		
-		int i = x + 1;
-		while(i < gridSize) {
-			if(newMapBlack[i][y] == false && map[i][y] == map[x][y]) {
-				/*if(i==x+1)
-					collisions+=2;
-				else
-					collisions++;
-				*/
-					collisions++;
-				
-				break;
-			}
-			i++;
-		}
-		i = x - 1;
-		while(i >= 0) {
-			if(newMapBlack[i][y] == false && map[i][y] == map[x][y]) {
-				/*if(i==x-1)
-					collisions+=2;
-				else*/
-					collisions++;
-				break;
-			}
-			i--;
-		}
-		i = y + 1;
-		while(i < gridSize) {
-			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
-				/*if(i==y+1)
-					collisions+=2;
-				else*/
-					collisions++;
-				break;
-			}
-			i++;
-		}
-		i = y - 1; //by� x zamiast y
-		while(i >= 0) {
-			if(newMapBlack[x][i] == false && map[x][i] == map[x][y]) {
-			/*	if(i==y-1)
-					collisions+=2;
-				else*/
-					collisions++;
-				break;
-			}
-			i--;
-		}
-		return collisions;
 	}
 	
 /*-----------------------------------------------------------------------------------------------------------*/	
-	
-	// return true if hitori is solved, no collisions at all
-	private boolean check(boolean[][] clicked) {
-		Integer[][] checked = new Integer[gridSize][gridSize];  // initialized with 0, 0-unvisited, 1-with collision, 2-without collision
-		
-		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				checked[i][j] = 0;
-			}
-		}
-		
-		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				//System.out.println("Current tile: " + i + " " + j +" checked value:"+checked[i][j]);
-				if(clicked[i][j] == true) {
-					checked[i][j] = 2;
-					continue;
-				}
-				int k = j+1;
-				int collisions = 0;
-				while(k < gridSize) {
-					if(clicked[i][k] == false && map[i][k] == map[i][j]) {
-						checked[i][k] = 1; 
-						cellGrid[i][j].setForeground(Color.RED);
-						collisions++;
-					}
-					k++;
-				}
-				int l = i+1;
-				while(l < gridSize) {
-					if(clicked[l][j] == false && map[l][j] == map[i][j]) {
-						checked[l][j] = 1; 
-						cellGrid[i][j].setForeground(Color.RED);
-						collisions++;
-					}
-					l++;
-				}
-				
-				if(collisions == 0 && checked[i][j] == 0) {
-					checked[i][j] = 2;
-					cellGrid[i][j].setForeground(Color.BLACK);
-				}
-				else {
-					cellGrid[i][j].setForeground(Color.RED);
-					checked[i][j] = 1;
-				}
-			}
-		}
-		
-		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				if(checked[i][j] == 1) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	
-	//return true if there is cut of white tiles
-	
-	private boolean checkCut(boolean[][] clicked, int howManyBlack) {
-		ArrayList<Point> points = new ArrayList<Point>();
-		boolean[][] visited = new boolean[gridSize][gridSize];
-		
-		a: for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				if(clicked[i][j] == false) {
-					points.add(new Point(i,j));
-					visited[i][j] = true;
-					//System.out.println("Poczatkowy pkt: " + i + " "+ j);
-					break a;
-				}
-			}
-		}
-		
-		for(int i = 0; i < points.size(); i++) {
-			int x = points.get(i).x;
-			int y = points.get(i).y;
-			
-			//System.out.println("Jestem na: " + x + " "+ y);
-			
-			if(x != 0 && visited[x-1][y] == false && clicked[x-1][y] == false) {
-				points.add(new Point(x-1,y));
-				visited[x-1][y] = true;
-				//System.out.println("Dodaje: " + (x-1) + " "+ y);
-			}
-			if(x != gridSize-1 && visited[x+1][y] == false && clicked[x+1][y] == false) {
-				points.add(new Point(x+1,y));
-				visited[x+1][y] = true;
-				//System.out.println("Dodaje: " + (x+1) + " "+ y);
-			}
-			if(y != 0 && visited[x][y-1] == false && clicked[x][y-1] == false) {
-				points.add(new Point(x,y-1));
-				visited[x][y-1] = true;
-				//System.out.println("Dodaje: " + x + " "+ (y-1));
-			}
-			if(y != gridSize-1 && visited[x][y+1] == false && clicked[x][y+1] == false) {
-				points.add(new Point(x,y+1));
-				visited[x][y+1] = true;
-				//System.out.println("Dodaje: " + x + " "+ (y+1));
-			}
-		}
-
-		if(points.size() == ((gridSize*gridSize) - howManyBlack))
-			return false;
-		else 
-			return true;
-	}
-	
-	
-	// return >0 if there is a touch
-	
-	private int checkTouch(int x, int y, boolean[][] clicked) {
-		int withHowMany = 0;
-		
-		if(x != 0) {
-			if(clicked[x-1][y] == true)
-				withHowMany++;
-		}
-		if(x != gridSize-1) {
-			if(clicked[x+1][y] == true)
-				withHowMany++;
-		}
-		if(y != 0) {
-			if(clicked[x][y-1] == true)
-				withHowMany++;
-		}
-		if(y != gridSize-1) {
-			if(clicked[x][y+1] == true)
-				withHowMany++;
-		}
-		return withHowMany;
-	}
 	
 	private void prepareMap(int gridSize) {
 		Random r = new Random();
@@ -1013,7 +553,7 @@ protected void runOnUiThread(Runnable runnable) {
 				howManyBlack++;
 			}
 					
-			if(checkCut(clicked, howManyBlack) || checkTouch(first, second, clicked) != 0){	// check if it's possible to cover it
+			if(alg.checkCut(clicked, howManyBlack) || alg.checkTouch(first, second, clicked) != 0){	// check if it's possible to cover it
 				
 				clicked[first][second] = false;					// if not it's a normal field again
 				howManyBlack--;
