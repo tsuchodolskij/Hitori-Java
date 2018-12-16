@@ -405,6 +405,7 @@ public class Algorithm {
 			return true;
 	}
 	
+	// show with how many sides is collision for this tile
 	public int checkSidesCollision(boolean[][] newMapBlack, int x, int y, Integer[][] map) {
 		int collisions = 0;
 		
