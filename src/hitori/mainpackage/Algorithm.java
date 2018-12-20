@@ -4,10 +4,348 @@ import java.util.ArrayList;
 
 public class Algorithm {
 	private int gridSize;
+	private int howManyBlack;
+	private Integer[][] map;
+	private GridPane grid;
 	
 	public Algorithm(int gridSize) {
 		this.gridSize = gridSize;
 	}
+	
+	public void setMap(Integer[][] map) {
+		this.map = map;
+	}
+	public void setGrid(GridPane grid) {
+		this.grid = grid;
+	}
+
+	public void aStar() {
+		
+		ArrayList<State> states = new ArrayList<State>();
+		
+		// expanding zero state
+		boolean [][] newMapBlack = checkNeighbors();
+		grid.updateMap(newMapBlack);
+		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0));
+		ArrayList<State> tmp = expand(states.get(0));
+		for(State i : tmp) {
+			states.add(i);
+		}
+		
+		while(true) {
+			// finding state with the lowest heuristic and cost
+			State lowestHC = null;
+			if(states.get(0) != null)
+				lowestHC = states.get(0);
+			
+			int lowestIndex = 0;
+			System.out.println("HC:" + lowestHC.getHC());
+			for (int i = 0; i < states.size(); i++) {
+				//System.out.println("HC:" + states.get(i).getHC());
+				if(states.size() > 0 && states.get(i).getHC() < lowestHC.getHC()) {
+					lowestHC = states.get(i);
+					lowestIndex = i;
+				}
+			}
+			/*try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
+			
+			System.out.println("LOWEST HC:" + lowestHC.getHC());
+			for (int k = 0; k < gridSize; k++) {
+				System.out.println("");
+				for (int x = 0; x < gridSize; x++) {
+					if(lowestHC.getBlack(k, x) == true)
+						System.out.print("1 ");
+					else 
+						System.out.print("0 ");
+				}
+			}
+			System.out.println("");
+			
+			if(lowestHC.getIsTerminal() == 1) { // we have the solution
+				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
+				grid.updateMap(lowestHC.getMapBlack());
+				break;
+			}
+			
+			states.remove(lowestIndex);			// deleting lowestHC from states list, because i expand him
+
+			tmp = expand(lowestHC);
+			if(tmp != null)
+				for(State i : tmp) {     			// adding every son of lowestHC
+					states.add(i);
+				}
+			
+			grid.updateMap(lowestHC.getMapBlack());
+			/*try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
+		}
+		
+		System.out.println("ALGORYTM A* ZAKONCZYL DZIALANIE");
+	}
+	
+
+private ArrayList<State> expand(State e) {
+
+	boolean[][] checked = new boolean[gridSize][gridSize]; // 0 means unchecked
+	
+	ArrayList<Point> vect = new ArrayList<Point>();
+	ArrayList<State> states = new ArrayList<State>();
+	
+	for (int i = 0; i < gridSize; i++) {
+		for (int j = 0; j < gridSize; j++) {
+
+			if(e.getBlack(i,j) == false && (checkTouch(i,j,e.getMapBlack())<1)) { // this tile is white
+				int value = map[i][j];
+				vect.add(new Point(i,j));
+				
+				for(int z = 0; z < vect.size(); z++){ // finding every tile, which has the same value as i,j (if it not exists, loop will go 1 time)
+					checked[vect.get(z).x][vect.get(z).y] = true; // every point is setting him visited
+					
+					int k = vect.get(z).x;
+					for(int m = 0; m < gridSize; m++) { // scanning x looking for the same value
+						if(checked[k][m] == false && map[k][m] == value && e.getBlack(k,m) == false) {
+							vect.add(new Point(k,m));
+							break; // to find only first in row/column (because of repetitions)
+						}
+					}
+					k = vect.get(z).y;
+					for(int m = 0; m < gridSize; m++) { // scanning y looking for the same value
+						if(checked[m][k] == false && map[m][k] == value && e.getBlack(m,k) == false) {
+							vect.add(new Point(m,k));
+							break;
+						}
+					}
+				} // z for
+				
+				
+				if(vect.size() > 1) { // if there is collision, make other states
+					int terminalStates = 0;
+					for(int m = 0; m < vect.size(); m++) {
+						
+						int[][] mapState = new int[gridSize][gridSize]; // 0 - white, 1 - black, 2-green
+						for(int z1=0; z1<gridSize; ++z1) {
+							for(int z2=0; z2<gridSize; ++z2) {
+								mapState[z1][z2] = 0; }}
+						
+						boolean[][] newMapBlack = new boolean[gridSize][gridSize]; // getting map for child
+						for (int k = 0; k < gridSize; k++) {
+							for (int x = 0; x < gridSize; x++) {
+								if(e.getBlack(k,x) == true) {
+									newMapBlack[k][x] = true;
+									mapState[k][x] = 1;
+								}
+								else {
+									newMapBlack[k][x] = false;
+								}
+							}
+						}
+						newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
+						mapState[vect.get(m).x][vect.get(m).y] = 1;
+						
+						System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
+						
+						setGreens(mapState);
+						int isTerminal = 1, weight = 0;
+						
+						if(checkAll(vect.get(m).x, vect.get(m).y, e.getBlackCount(), newMapBlack, mapState, map))
+						{
+							
+							int new_blacks = eliminateOther(mapState, newMapBlack, e.getBlackCount(), map);
+							if(new_blacks != -1)
+							{
+							
+								System.out.println("Newblacks: "+new_blacks);
+								
+								for (int k = 0; k < gridSize; k++) {
+									System.out.println("");
+									for (int x = 0; x < gridSize; x++) {
+										if(newMapBlack[k][x] == true) {
+											if(map[k][x]>9)
+												System.out.print("("+map[k][x]+") ");
+											else
+												System.out.print(" ("+map[k][x]+") ");
+										}
+										else { 
+											if(map[k][x]>9)
+												System.out.print(" "+map[k][x]+"  ");
+											else
+												System.out.print("  "+map[k][x]+"  ");
+										}
+									}
+								}
+								new_blacks++;
+							
+								Integer[][] red = check(newMapBlack, map);
+								a : for (int i1 = 0; i1 < gridSize; i1++) {
+									for (int j1 = 0; j1 < gridSize; j1++) {
+										if(red[i1][j1] == 1) {
+											isTerminal = 0; // if at least one tile is red, it is no terminal
+											break a;
+										}
+									}
+								}
+								
+								int sidesCollision = checkSidesCollision(newMapBlack, vect.get(m).x, vect.get(m).y, map);
+								
+								terminalStates++;
+								states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
+									e.getBlackCount()+new_blacks, vect.size(), isTerminal, sidesCollision, weight));
+							}
+						}
+						
+					}	
+					if(terminalStates == 0) {
+						e.setCost(1000);
+						return null;
+					}
+				}
+				//System.out.println(" ");
+			
+				vect.clear(); // every value like first was found, so prepare for another loop
+				
+			} // if
+		} // j for
+	} // i for
+	
+	return states;
+}	
+
+// PRZYDALO BY SIE DODAC ARGUMENTY DO FUNKCJI, ZEBY NP NIE KORZYSTALO Z HOWMANYBLACK GLOBALNYCH TYLKO MIALO SWOJE LOKALNE O ILE MOZLIWE
+private boolean[][] checkNeighbors() {
+	int[][] mapState = new int[gridSize][gridSize];
+	boolean[][] newMapBlack = new boolean[gridSize][gridSize];
+	boolean[][] checked = new boolean[gridSize][gridSize];
+	
+	for(int i=0; i<gridSize; ++i) {
+		for(int j=0; j<gridSize; ++j) {
+			newMapBlack[i][j] = checked[i][j] = false;
+			mapState[i][j] = 0;
+		}}
+			
+	System.out.println("Troj: "+howManyBlack);
+	for(int i=0; i<gridSize - 1; ++i) {
+		for(int j=0; j<gridSize - 1; ++j) {
+			
+			if(map[i][j] == map[i][j+1]) {
+				
+				if(j<gridSize-2 && map[i][j] == map[i][j+2]) { // triplet
+					
+					newMapBlack[i][j] = newMapBlack[i][j+2] = true;
+					mapState[i][j] = mapState[i][j+2] = 1;
+					if(!checked[i][j])
+						howManyBlack++;
+					if(!checked[i][j+2])
+						howManyBlack++;
+					checked[i][j] = checked[i][j+2] = true;
+					
+					j+=2;
+					//System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
+				}
+				
+				for(int k = j+2; k < gridSize; ++k) {
+					if(!checked[i][k] && map[i][k] == map[i][j]) { // para/triplet + 
+						newMapBlack[i][k] = true;
+						mapState[i][k] = 1;
+						if(!checked[i][k])
+							howManyBlack++;
+						
+						checked[i][k] = true;
+						//System.out.println("POZ-przod-do pary: "+i+" "+j+" black: "+howManyBlack);
+					}
+				}
+				
+				for(int k = j-2; k >= 0; --k) {
+					if(!checked[i][k] && map[i][k] == map[i][j]) { // para/triplet + 
+						newMapBlack[i][k] = true;
+						mapState[i][k] = 1;
+						if(!checked[i][k])
+							howManyBlack++;
+						
+						checked[i][k] = true;
+						//System.out.println("POZ-tyl-do pary: "+i+" "+j+" black: "+howManyBlack);
+					}
+				}
+			}
+			
+			if(map[i][j] == map[i+1][j]) {
+				
+				int tmp = i;
+				if(i<gridSize-2 && map[i][j] == map[i+2][j]) {
+					
+					
+					newMapBlack[i][j] = newMapBlack[i+2][j] = true;
+					mapState[i][j] = mapState[i+2][j] = 1;
+					if(!checked[i][j])
+						howManyBlack++;
+					if(!checked[i+2][j])
+						howManyBlack++;
+					checked[i][j] = checked[i+2][j] = true;
+					tmp++;
+					//System.out.println("POZ-Triplet: "+i+" "+j+" black: "+howManyBlack);
+				}
+				
+				for(int k = tmp+3; k < gridSize; ++k) {
+					if(!checked[k][j] && map[k][j] == map[i][j]) { // para/triplet + 
+						newMapBlack[k][j] = true;
+						mapState[k][j] = 1;
+						if(!checked[k][j])
+							howManyBlack++;
+						
+						checked[i][k] = true;
+						//System.out.println("POZ-gora-do pary: "+i+" "+j+" black: "+howManyBlack);
+
+					}
+				}
+				
+				for(int k = i-2; k >= 0; --k) {
+					if(!checked[k][j] && map[k][j] == map[i][j]) { // para/triplet + 
+						newMapBlack[k][j] = true;
+						mapState[k][j] = 1;
+						if(!checked[k][j])
+							howManyBlack++;
+						
+						checked[i][k] = true;
+						//System.out.println("POZ-dol-do pary: "+i+" "+j+" black: "+howManyBlack);
+
+					}
+				}
+			}
+		}
+	}
+	System.out.println("Trojki: "+howManyBlack);
+	for(int i=0; i<gridSize; ++i) {
+		for(int j=0; j<gridSize; ++j) {
+			if(newMapBlack[i][j]) 
+				System.out.print("1 ");
+			else
+				System.out.print("0 ");
+		}
+		System.out.println();
+	}
+	
+	setGreens(mapState);
+	howManyBlack+=eliminateOther(mapState, newMapBlack, howManyBlack-1, map);
+	
+	System.out.println("Mapa: "+howManyBlack);
+	for(int i=0; i<gridSize; ++i) {
+		for(int j=0; j<gridSize; ++j) {
+			if(newMapBlack[i][j]) 
+				System.out.print("1 ");
+			else
+				System.out.print("0 ");
+		}
+		System.out.println();
+	}
+	
+	return newMapBlack;
+}
 	
 	/* eliminate all possible cells for this state */
 	public int eliminateOther(int [][] mapState, boolean[][] mapBlack, int actual_black, Integer[][] map) {		
