@@ -77,16 +77,17 @@ class GridPane extends JPanel {
 				sp.statusSetText("");
 			
 			if(collision == false && touch == 0 && cut == false)
-				sp.statusSetText("<html><div style='text-align: center;'>"+ "GRATULUJE! WYGRALES" +"</div></html>");
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "YOU WON!" +"</div></html>");
 			else if(touch != 0)
-				sp.statusSetText("<html><div style='text-align: center;'>"+ "CZARNE POLA NIE MOGA SIE STYKAC" +"</div></html>");
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "BLACK TILES CANNOT TOUCH EACH OTHER" +"</div></html>");
 			else if(cut == true)
-				sp.statusSetText("<html><div style='text-align: center;'>"+ "CZARNE POLA NIE MOGA PRZECIAC BIALEJ FIGURY" +"</div></html>");
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "WHITE FIELD CANNOT BE CUT" +"</div></html>");
 		}
 	}
 	
 	public GridPane(int gridSize, SettingsPane sp) {
 		this.sp = sp;
+		sp.setGridPane(this);
 		alg = new Algorithm(gridSize);
 		touch = 0;
 		cut = false;
@@ -130,7 +131,9 @@ class GridPane extends JPanel {
 			}
 			System.out.println();
 		}
-	
+	}
+
+	public void solve() {
 		Thread thread = new Thread() {
 	        @Override
 	        public void run() {
@@ -138,7 +141,7 @@ class GridPane extends JPanel {
 	                Thread.sleep(1000);
 	            } catch (InterruptedException e) {
 	            }
-
+	
 	            runOnUiThread(new Runnable() {
 	                @Override
 	                public void run() {
@@ -152,6 +155,7 @@ class GridPane extends JPanel {
 	
 	protected void runOnUiThread(Runnable runnable) {
 		alg.aStar();
+		sp.statusSetText("<html><div style='text-align: center;'>"+ "A* SOLVED HITORI" +"</div></html>");
 	}
 	
 	public void updateMap(boolean[][] newMap){

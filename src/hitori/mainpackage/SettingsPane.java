@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 class SettingsPane extends JPanel {
 
 	private static final long serialVersionUID = 1316360567254798368L;
+	private GridPane gp;
 	
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
@@ -25,10 +26,8 @@ class SettingsPane extends JPanel {
 	
 	JLabel status = new JLabel("");
 	JLabel gridSizeLabel = new JLabel("Choose the grid size:");
-	//JLabel errorLabel = new JLabel(errorMsg);
 	JButton buildGridButton = new JButton("Build Grid");
 	JButton loadGridButton = new JButton("Load Grid");
-	JButton checkButton = new JButton("Check");
 	JButton solveButton = new JButton("Solve");
 	JButton exitButton = new JButton("Exit");
 	JComboBox<String> gridSizeBox;
@@ -60,7 +59,7 @@ class SettingsPane extends JPanel {
 	 class solveListener implements ActionListener {
 		 @Override
 		 public void actionPerformed(ActionEvent e) {
-			 
+			 gp.solve();
 		}
 	 }
 	 
@@ -98,11 +97,7 @@ class SettingsPane extends JPanel {
 		add(loadGridButton);
 		loadGridButton.addActionListener(new loadGridListener());
 		
-		checkButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 165, 110, 25);
-		add(checkButton);
-		checkButton.addActionListener(new checkListener());
-		
-		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 220, 110, 25);
+		solveButton.setBounds(screenSize.width / 8 - 55, (screenSize.height - 48) / 4 + 170, 110, 25);
 		add(solveButton);
 		solveButton.addActionListener(new solveListener());
 		
@@ -113,6 +108,10 @@ class SettingsPane extends JPanel {
 	
 	public void statusSetText(String text) {
 		status.setText(text);
+	}
+	
+	public void setGridPane(GridPane gp) {
+		this.gp = gp;
 	}
 	
 	@Override
