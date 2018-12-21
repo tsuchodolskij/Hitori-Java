@@ -57,7 +57,7 @@ public class Algorithm {
 			System.out.println("LOWEST HC:" + lowestHC.getHC());
 			System.out.println("LOWEST NR:" + lowestHC.getNr());
 
-			for (int k = 0; k < gridSize; k++) {
+			/*for (int k = 0; k < gridSize; k++) {
 				System.out.println("");
 				for (int x = 0; x < gridSize; x++) {
 					if(lowestHC.getBlack(k, x) == true)
@@ -66,7 +66,7 @@ public class Algorithm {
 						System.out.print("0 ");
 				}
 			}
-			System.out.println("");
+			System.out.println("");*/
 			
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
 				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
@@ -165,7 +165,7 @@ private ArrayList<State> expand(State e) {
 							if(new_blacks != -1)
 							{
 							
-								System.out.println("Newblacks: "+new_blacks);
+								/*System.out.println("Newblacks: "+new_blacks);
 								
 								for (int k = 0; k < gridSize; k++) {
 									System.out.println("");
@@ -183,7 +183,7 @@ private ArrayList<State> expand(State e) {
 												System.out.print("  "+map[k][x]+"  ");
 										}
 									}
-								}
+								}*/
 								new_blacks++;
 							
 								Integer[][] red = check(newMapBlack, map);

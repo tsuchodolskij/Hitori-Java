@@ -146,9 +146,17 @@ class GridPane extends JPanel {
 	}
 	
 	public void updateMap(boolean[][] newMap){
+		int blackTiles = 0;
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
+				clicked[i][j] = newMap[i][j];
+				if(clicked[i][j])
+					cellGrid[i][j].setPressed(true);
+				else 
+					cellGrid[i][j].setPressed(false);
+				
 				if(newMap[i][j] == true) {
+					blackTiles++;
 					cellGrid[i][j].setForeground(Color.WHITE);
 					cellGrid[i][j].setBackground(Color.BLACK);
 				}
@@ -158,6 +166,7 @@ class GridPane extends JPanel {
 				}
 			}
 		}
+		howManyBlack = blackTiles;
 	}
 	
 	private void prepareMap(int gridSize) {
