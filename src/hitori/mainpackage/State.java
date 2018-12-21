@@ -14,8 +14,9 @@ public class State {
 	private double hc;
 	private int isTerminal;  // 0- not terminal, 1 - terminal, 2 - collision (high cost function, not go in this state)
 	private int weight, prevWeight;
+	private int Nr;
 	
-	public State(int x, int y, int gridSize, boolean[][] black, int blackCount, int chainLength, int isTerminal, int sidesCollisions, int weight){
+	public State(int x, int y, int gridSize, boolean[][] black, int blackCount, int chainLength, int isTerminal, int sidesCollisions, int nr){
 		this.x = x;
 		this.y = y;
 		this.gridSize = gridSize;
@@ -24,10 +25,9 @@ public class State {
 		this.chainLength = chainLength;
 		this.isTerminal = isTerminal;
 		this.sidesCollisions = sidesCollisions;
-		this.weight = weight;
+		this.Nr = nr;		
 		
-		
-		cost = gridSize*gridSize + chainLength;
+		cost = gridSize*gridSize; //+ chainLength;
 		if(isTerminal == 2)
 			cost *= gridSize*gridSize;
 		
@@ -37,10 +37,14 @@ public class State {
 		hc = heuristic + cost;
 		
 		System.out.println("\nNew state hc: "+hc);
+		System.out.println("New state Nr: "+Nr);
 	}
 	
 	public double getHC() {
 		return hc;
+	}
+	public int getNr() {
+		return Nr;
 	}
 	
 	public boolean getBlack(int x, int y) {

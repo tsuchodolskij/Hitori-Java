@@ -1,12 +1,14 @@
 package hitori.mainpackage;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Algorithm {
 	private int gridSize;
 	private int howManyBlack;
 	private Integer[][] map;
 	private GridPane grid;
+	private int stateNr = 0;
 	
 	public Algorithm(int gridSize) {
 		this.gridSize = gridSize;
@@ -39,7 +41,6 @@ public class Algorithm {
 				lowestHC = states.get(0);
 			
 			int lowestIndex = 0;
-			System.out.println("HC:" + lowestHC.getHC());
 			for (int i = 0; i < states.size(); i++) {
 				//System.out.println("HC:" + states.get(i).getHC());
 				if(states.size() > 0 && states.get(i).getHC() < lowestHC.getHC()) {
@@ -47,13 +48,15 @@ public class Algorithm {
 					lowestIndex = i;
 				}
 			}
-			/*try {
-				TimeUnit.SECONDS.sleep(2);
+			try {
+				TimeUnit.SECONDS.sleep(0);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}*/
+			}
 			
 			System.out.println("LOWEST HC:" + lowestHC.getHC());
+			System.out.println("LOWEST NR:" + lowestHC.getNr());
+
 			for (int k = 0; k < gridSize; k++) {
 				System.out.println("");
 				for (int x = 0; x < gridSize; x++) {
@@ -86,10 +89,8 @@ public class Algorithm {
 				e.printStackTrace();
 			}*/
 		}
-		
 		System.out.println("ALGORYTM A* ZAKONCZYL DZIALANIE");
 	}
-	
 
 private ArrayList<State> expand(State e) {
 
@@ -124,9 +125,12 @@ private ArrayList<State> expand(State e) {
 					}
 				} // z for
 				
-				
 				if(vect.size() > 1) { // if there is collision, make other states
 					int terminalStates = 0;
+					boolean wrong[] = new boolean[vect.size()];
+					for(int ww = 0; ww < vect.size(); ++ww)
+						wrong[ww] = false;
+					
 					for(int m = 0; m < vect.size(); m++) {
 						
 						int[][] mapState = new int[gridSize][gridSize]; // 0 - white, 1 - black, 2-green
@@ -196,16 +200,31 @@ private ArrayList<State> expand(State e) {
 								
 								terminalStates++;
 								states.add(new State(vect.get(m).x, vect.get(m).y, gridSize, newMapBlack, 
-									e.getBlackCount()+new_blacks, vect.size(), isTerminal, sidesCollision, weight));
+									e.getBlackCount()+new_blacks, vect.size(), isTerminal, sidesCollision, stateNr));
+								stateNr++;
 							}
 						}
-						
+						else {
+							wrong[m] = true; 
+						}
 					}	
-					if(terminalStates == 0) {
-						e.setCost(1000);
-						return null;
+					for(int w1=0; w1<vect.size()-1; ++w1) {
+						if(wrong[w1]) {
+							for(int w2=w1+1; w2<vect.size(); ++w2) {
+								if(wrong[w2]) {
+									if(vect.get(w1).x == vect.get(w2).x ||
+											vect.get(w1).y == vect.get(w2).y) {
+										System.out.println("wyjebalo: x1:"+vect.get(w1).x+" y1:"+vect.get(w1).y
+												+" x2:"+vect.get(w2).x+" y2:"+vect.get(w2).y);
+										return null;
+									}
+								}
+							}
+						}
 					}
-				}
+					
+					
+				}// vect.size()
 				//System.out.println(" ");
 			
 				vect.clear(); // every value like first was found, so prepare for another loop
@@ -217,7 +236,6 @@ private ArrayList<State> expand(State e) {
 	return states;
 }	
 
-// PRZYDALO BY SIE DODAC ARGUMENTY DO FUNKCJI, ZEBY NP NIE KORZYSTALO Z HOWMANYBLACK GLOBALNYCH TYLKO MIALO SWOJE LOKALNE O ILE MOZLIWE
 private boolean[][] checkNeighbors() {
 	int[][] mapState = new int[gridSize][gridSize];
 	boolean[][] newMapBlack = new boolean[gridSize][gridSize];
