@@ -1,6 +1,7 @@
 package hitori.mainpackage;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +23,7 @@ class SettingsPane extends JPanel {
 			"21x21", "22x22", "23x23", "24x24", "25x25", "26x26", "27x27", "28x28", "29x29", "30x30",
 			"31x31", "32x32", "33x33", "34x34", "35x35", "36x36", "37x37", "38x38", "39x39", "40x40"};
 	
-	
+	JLabel status = new JLabel("Game Status");
 	JLabel gridSizeLabel = new JLabel("Choose the grid size:");
 	//JLabel errorLabel = new JLabel(errorMsg);
 	JButton buildGridButton = new JButton("Build Grid");
@@ -73,6 +74,11 @@ class SettingsPane extends JPanel {
 	
 	public SettingsPane(int gridSize) {
 		setLayout(null);
+		
+		status.setBounds(0, ((screenSize.height - 48) / 4) - 100, (int) screenSize.width / 4, 25);
+		status.setHorizontalAlignment(JLabel.CENTER);
+		status.setFont(new Font("Status", Font.BOLD, 24));
+		add(status);
 		
 	    gridSizeLabel.setBounds(0, (screenSize.height - 48) / 4, (int) screenSize.width / 4, 25);
 	    gridSizeLabel.setHorizontalAlignment(JLabel.CENTER);
