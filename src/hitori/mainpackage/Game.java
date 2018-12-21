@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 public final class Game {
 
 	private static JFrame gameFrame;
+	private static SettingsPane s;
 	
 	private Game() {
 		
@@ -23,6 +24,8 @@ public final class Game {
 	}
 	
 	public static void buildGrid(int gridSize) {
+		s = new SettingsPane(gridSize);
+		
 		gameFrame = new JFrame();
 		gameFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		gameFrame.setVisible(true);
@@ -34,8 +37,8 @@ public final class Game {
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		JPanel gamePane = new JPanel(new GridBagLayout());
-		JPanel gridPane = new GridPane(gridSize);
-		JPanel settingsPane = new SettingsPane(gridSize);
+		JPanel gridPane = new GridPane(gridSize, s);
+		JPanel settingsPane = s;
 		GridBagConstraints gbc = new GridBagConstraints();
 		gamePane.setSize(screenSize.width, screenSize.height - 48);
 		gbc.gridx = 0;

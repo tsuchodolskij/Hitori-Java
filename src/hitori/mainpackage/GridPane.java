@@ -18,6 +18,7 @@ class GridPane extends JPanel {
 
 	private static final long serialVersionUID = 5376889337682664210L;
 	
+	private SettingsPane sp;
 	private Algorithm alg;
 	private int gridSize;
 	private int howManyBlack;
@@ -72,12 +73,20 @@ class GridPane extends JPanel {
 				}
 			}
 			
+			if(touch == 0 && cut == false)
+				sp.statusSetText("");
+			
 			if(collision == false && touch == 0 && cut == false)
-				System.out.println("GRATULUJE! WYGRALES");
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "GRATULUJE! WYGRALES" +"</div></html>");
+			else if(touch != 0)
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "CZARNE POLA NIE MOGA SIE STYKAC" +"</div></html>");
+			else if(cut == true)
+				sp.statusSetText("<html><div style='text-align: center;'>"+ "CZARNE POLA NIE MOGA PRZECIAC BIALEJ FIGURY" +"</div></html>");
 		}
 	}
 	
-	public GridPane(int gridSize) {
+	public GridPane(int gridSize, SettingsPane sp) {
+		this.sp = sp;
 		alg = new Algorithm(gridSize);
 		touch = 0;
 		cut = false;
