@@ -31,7 +31,7 @@ public final class Game {
 		gameFrame.setVisible(true);
 		gameFrame.setLayout(new BorderLayout());
 		gameFrame.setTitle("Hitori");
-		gameFrame.setResizable(false);
+		gameFrame.setResizable(true);
 		gameFrame.setLocationRelativeTo(null);
 		gameFrame.setVisible(true);
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

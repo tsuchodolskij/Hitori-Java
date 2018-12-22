@@ -236,7 +236,7 @@ private ArrayList<State> expand(State e) {
 	return states;
 }	
 
-private boolean[][] checkNeighbors() {
+public boolean[][] checkNeighbors() {
 	int[][] mapState = new int[gridSize][gridSize];
 	boolean[][] newMapBlack = new boolean[gridSize][gridSize];
 	boolean[][] checked = new boolean[gridSize][gridSize];
@@ -247,7 +247,7 @@ private boolean[][] checkNeighbors() {
 			mapState[i][j] = 0;
 		}}
 			
-	System.out.println("Troj: "+howManyBlack);
+	//System.out.println("Troj: "+howManyBlack);
 	for(int i=0; i<gridSize - 1; ++i) {
 		for(int j=0; j<gridSize - 1; ++j) {
 			
@@ -337,7 +337,7 @@ private boolean[][] checkNeighbors() {
 			}
 		}
 	}
-	System.out.println("Trojki: "+howManyBlack);
+	/*System.out.println("Trojki: "+howManyBlack);
 	for(int i=0; i<gridSize; ++i) {
 		for(int j=0; j<gridSize; ++j) {
 			if(newMapBlack[i][j]) 
@@ -346,12 +346,12 @@ private boolean[][] checkNeighbors() {
 				System.out.print("0 ");
 		}
 		System.out.println();
-	}
+	}*/
 	
 	setGreens(mapState);
 	howManyBlack+=eliminateOther(mapState, newMapBlack, howManyBlack-1, map);
 	
-	System.out.println("Mapa: "+howManyBlack);
+	/*System.out.println("Mapa: "+howManyBlack);
 	for(int i=0; i<gridSize; ++i) {
 		for(int j=0; j<gridSize; ++j) {
 			if(newMapBlack[i][j]) 
@@ -360,7 +360,7 @@ private boolean[][] checkNeighbors() {
 				System.out.print("0 ");
 		}
 		System.out.println();
-	}
+	}*/
 	
 	return newMapBlack;
 }
@@ -382,7 +382,6 @@ private boolean[][] checkNeighbors() {
 								if(map[x][j] == map[i][j]) {
 									
 									if(mapState[x][j] == 0){
-										
 										
 										mapBlack[x][j] = true;
 										new_blacks++;
