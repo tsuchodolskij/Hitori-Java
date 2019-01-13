@@ -2,6 +2,8 @@ package pszt.hitori;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import pszt.algorithm.Algorithm;
+
 
 public class TestCheckSidesCollision {
 

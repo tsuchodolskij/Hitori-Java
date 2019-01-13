@@ -11,6 +11,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import pszt.map.MapLoader;
+
 class SettingsPane extends JPanel {
 
 	private static final long serialVersionUID = 1316360567254798368L;

@@ -9,12 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-class GridPane extends JPanel {
+import pszt.algorithm.Algorithm;
+import pszt.algorithm.Point;
+import pszt.map.MapLoader;
+
+public class GridPane extends JPanel {
 
 	private static final long serialVersionUID = 5376889337682664210L;
 	
@@ -293,12 +296,3 @@ class GridPane extends JPanel {
 		return getPreferredSize();
 	}
 }
-
-class Point {
-	public int x, y;
-	
-	Point(int a, int b){
-		x = a;
-		y = b;
-	}
-};

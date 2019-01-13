@@ -1,8 +1,9 @@
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/Hitori.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/Algorithm.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/GridPane.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/MapLoader.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/Game.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/Cell.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/State.java
-/home/tomas/Documents/Hitori-Java/src/main/java/pszt/hitori/SettingsPane.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/algorithm/Algorithm.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/algorithm/State.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/hitori/SettingsPane.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/map/MapLoader.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/hitori/Hitori.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/hitori/Game.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/hitori/GridPane.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/algorithm/Point.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/main/java/pszt/hitori/Cell.java

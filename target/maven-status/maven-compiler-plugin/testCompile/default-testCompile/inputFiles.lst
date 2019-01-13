@@ -1,7 +1,7 @@
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheckGreens.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestEliminateOther.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheck.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheckCut.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheckSidesCollision.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheckTouch.java
-/home/tomas/Documents/Hitori-Java/src/test/java/pszt/hitori/TestCheckNeighbours.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheckSidesCollision.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestEliminateOther.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheckNeighbours.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheckGreens.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheckCut.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheck.java
+/home/kklimczu/eclipse-workspace/PSZT/Hitori-Java/src/test/java/pszt/hitori/TestCheckTouch.java

@@ -1,14 +1,9 @@
-package pszt.hitori;
-
-import java.awt.Color;
+package pszt.algorithm;
 
 public class State {
-	private int gridSize;
 	private boolean[][] black;
 	public int x, y;
 	private int blackCount;
-	private int sidesCollisions;
-	private double chainLength;
 	private double heuristic;
 	private double cost;
 	private double hc;
@@ -19,15 +14,12 @@ public class State {
 	public State(int x, int y, int gridSize, boolean[][] black, int blackCount, int chainLength, int isTerminal, int sidesCollisions, int nr){
 		this.x = x;
 		this.y = y;
-		this.gridSize = gridSize;
 		this.black = black;
 		this.blackCount = blackCount;
-		this.chainLength = chainLength;
 		this.isTerminal = isTerminal;
-		this.sidesCollisions = sidesCollisions;
 		this.Nr = nr;		
 		
-		cost = gridSize*gridSize; //+ chainLength;
+		cost = chainLength + sidesCollisions;
 		if(isTerminal == 2)
 			cost *= gridSize*gridSize;
 		

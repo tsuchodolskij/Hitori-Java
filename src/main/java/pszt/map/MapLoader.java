@@ -1,11 +1,11 @@
-package pszt.hitori;
+package pszt.map;
 
 import java.io.File;
 import java.util.Scanner;
 
+import pszt.hitori.Game;
+
 public class MapLoader {
-	
-	private static final long serialVersionUID = -4426099419122563616L;
 	
 	private Scanner loader;
 	private int gridSize;

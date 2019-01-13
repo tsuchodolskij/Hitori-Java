@@ -1,7 +1,9 @@
-package pszt.hitori;
+package pszt.algorithm;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import pszt.hitori.GridPane;
 
 public class Algorithm {
 	private int gridSize;

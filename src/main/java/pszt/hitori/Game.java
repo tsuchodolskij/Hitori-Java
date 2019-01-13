@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import pszt.map.MapLoader;
+
 public final class Game {
 
 	private static JFrame gameFrame;

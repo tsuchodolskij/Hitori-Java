@@ -2,6 +2,8 @@ package pszt.hitori;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import pszt.algorithm.Algorithm;
+
 
 public class TestCheckNeighbours {
 
