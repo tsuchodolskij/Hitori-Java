@@ -37,7 +37,7 @@ class SettingsPane extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if ((String) gridSizeBox.getSelectedItem() != "") {
 				Game.getGameFrame().dispose();
-				Game.buildGrid(gridSizeBox.getSelectedIndex() + 3);
+				Game.buildGrid(gridSizeBox.getSelectedIndex() + 3, null);
 			 }
 		}
 	}
@@ -45,7 +45,9 @@ class SettingsPane extends JPanel {
 	class loadGridListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			 
+			 Game.getGameFrame().dispose();
+			 MapLoader mapLoader = new MapLoader();
+			 mapLoader.loadMap();
 		}
 	}
 	 

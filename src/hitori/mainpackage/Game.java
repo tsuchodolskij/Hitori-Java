@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public final class Game {
@@ -23,7 +22,7 @@ public final class Game {
 		return gameFrame;
 	}
 	
-	public static void buildGrid(int gridSize) {
+	public static void buildGrid(int gridSize, MapLoader loader) {
 		s = new SettingsPane(gridSize);
 		
 		gameFrame = new JFrame();
@@ -35,11 +34,15 @@ public final class Game {
 		gameFrame.setLocationRelativeTo(null);
 		gameFrame.setVisible(true);
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		JPanel gamePane = new JPanel(new GridBagLayout());
-		JPanel gridPane = new GridPane(gridSize, s);
+		JPanel gridPane;
+		if (loader != null) gridPane = new GridPane(gridSize, s, loader);
+		else gridPane = new GridPane(gridSize, s, null);
 		JPanel settingsPane = s;
 		GridBagConstraints gbc = new GridBagConstraints();
+		
 		gamePane.setSize(screenSize.width, screenSize.height - 48);
 		gbc.gridx = 0;
         gbc.gridy = 0;

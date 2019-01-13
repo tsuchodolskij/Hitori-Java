@@ -85,7 +85,7 @@ class GridPane extends JPanel {
 		}
 	}
 	
-	public GridPane(int gridSize, SettingsPane sp) {
+	public GridPane(int gridSize, SettingsPane sp, MapLoader loader) {
 		this.sp = sp;
 		sp.setGridPane(this);
 		alg = new Algorithm(gridSize);
@@ -99,7 +99,9 @@ class GridPane extends JPanel {
 		clicked = new boolean[gridSize][gridSize];
 		notColiding = new boolean[gridSize][gridSize];
 		
-		prepareMap(gridSize);
+		if (loader == null) prepareMap(gridSize);
+		else readMapFromLoader(loader);
+		
 		alg.setMap(map);
 		alg.setGrid(this);
 
@@ -130,6 +132,14 @@ class GridPane extends JPanel {
 					System.out.print(map[i][j]+"  ");
 			}
 			System.out.println();
+		}
+	}
+
+	private void readMapFromLoader(MapLoader loader) {
+		for(int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				this.map[j][i] = loader.getCell(j, i);
+			}
 		}
 	}
 
