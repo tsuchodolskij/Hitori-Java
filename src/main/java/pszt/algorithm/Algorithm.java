@@ -35,11 +35,18 @@ public class Algorithm {
 			states.add(i);
 		}
 		
+		/*try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}*/
+		
 		while(true) {	// finding state with the lowest heuristic and cost
 			State lowestHC = null;
 			if(states.get(0) != null)
 				lowestHC = states.get(0);
 			
+			// lowest state
 			int lowestIndex = 0;
 			for (int i = 0; i < states.size(); i++) {
 				if(states.size() > 0 && states.get(i).getHC() < lowestHC.getHC()) {
@@ -47,15 +54,17 @@ public class Algorithm {
 					lowestIndex = i;
 				}
 			}
+
+		
 			try {
 				TimeUnit.SECONDS.sleep(0);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println("LOWEST HC:" + lowestHC.getHC());
-			System.out.println("LOWEST NR:" + lowestHC.getNr());
+			//System.out.println("LOWEST HC:" + lowestHC.getHC());
+			//System.out.println("LOWEST NR:" + lowestHC.getNr());
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
-				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
+				//System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
 				grid.updateMap(lowestHC.getMapBlack());
 				break;
 			}
@@ -131,7 +140,7 @@ private ArrayList<State> expand(State e) {
 						newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
 						mapState[vect.get(m).x][vect.get(m).y] = 1;
 						
-						System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
+						//System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 
 						setGreens(mapState);
 						int isTerminal = 1;
@@ -168,8 +177,8 @@ private ArrayList<State> expand(State e) {
 								if(wrong[w2]) {
 									if(vect.get(w1).x == vect.get(w2).x ||
 											vect.get(w1).y == vect.get(w2).y) {
-										System.out.println("wyrzuca: x1:"+vect.get(w1).x+" y1:"+vect.get(w1).y
-												+" x2:"+vect.get(w2).x+" y2:"+vect.get(w2).y);
+										//System.out.println("wyrzuca: x1:"+vect.get(w1).x+" y1:"+vect.get(w1).y
+										//		+" x2:"+vect.get(w2).x+" y2:"+vect.get(w2).y);
 										return null;
 									}
 								}

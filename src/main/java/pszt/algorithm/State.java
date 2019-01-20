@@ -19,7 +19,7 @@ public class State {
 		this.isTerminal = isTerminal;
 		this.Nr = nr;		
 		
-		cost = chainLength + sidesCollisions;
+		cost = chainLength + java.lang.Math.abs(2-sidesCollisions);
 		if(isTerminal == 2)
 			cost *= gridSize*gridSize;
 		
@@ -28,8 +28,8 @@ public class State {
 			heuristic = 0;
 		hc = heuristic + cost;
 		
-		System.out.println("\nNew state hc: "+hc);
-		System.out.println("New state Nr: "+Nr);
+		//System.out.println("\nNew state hc: "+hc);
+		//System.out.println("New state Nr: "+Nr);
 	}
 	
 	public double getHC() {
