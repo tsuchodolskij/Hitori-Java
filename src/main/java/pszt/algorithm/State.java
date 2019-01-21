@@ -21,6 +21,11 @@ public class State {
 		cost = gridSize*gridSize+ chainLength + 4-sidesCollisions*3;
 		//if(isTerminal == 2)
 			//cost *= gridSize*gridSize;
+
+		cost = chainLength + java.lang.Math.abs(2-sidesCollisions);
+		if(isTerminal == 2)
+			cost *= gridSize*gridSize;
+
 		
 		heuristic = (gridSize*gridSize - 2*blackCount);
 		if(isTerminal == 1)

@@ -35,11 +35,18 @@ public class Algorithm {
 			states.add(i);
 		}
 		
+		/*try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}*/
+		
 		while(true) {	// finding state with the lowest heuristic and cost
 			State lowestHC = null;
 			if(states.get(0) != null)
 				lowestHC = states.get(0);
 			
+			// lowest state
 			int lowestIndex = 0;
 			for (int i = 0; i < states.size(); i++) {
 				if(states.size() > 0 && states.get(i).getHC() < lowestHC.getHC()) {
@@ -47,15 +54,17 @@ public class Algorithm {
 					lowestIndex = i;
 				}
 			}
+
+		
 			try {
 				TimeUnit.SECONDS.sleep(0);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println("LOWEST HC:" + lowestHC.getHC());
-			System.out.println("LOWEST NR:" + lowestHC.getNr());
+			//System.out.println("LOWEST HC:" + lowestHC.getHC());
+			//System.out.println("LOWEST NR:" + lowestHC.getNr());
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
-				System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
+				//System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
 				grid.updateMap(lowestHC.getMapBlack());
 				break;
 			}
@@ -138,7 +147,7 @@ private ArrayList<State> expand(State e) {
 						newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
 						mapState[vect.get(m).x][vect.get(m).y] = 1;
 						
-						System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
+						//System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 
 						setGreens(mapState);
 						int isTerminal = 1;
@@ -174,11 +183,7 @@ private ArrayList<State> expand(State e) {
 							for(int w2=w1+1; w2<vect.size(); ++w2) {
 								if(wrong[w2]) {
 									if(vect.get(w1).x == vect.get(w2).x ||
-											vect.get(w1).y == vect.get(w2).y) {
-										System.out.println("wyrzuca: x1:"+vect.get(w1).x+" y1:"+vect.get(w1).y
-												+" x2:"+vect.get(w2).x+" y2:"+vect.get(w2).y);
-										return null;
-									}
+											vect.get(w1).y == vect.get(w2).y) { return null; }
 								}
 							}
 						}
@@ -282,11 +287,11 @@ public boolean[][] checkNeighbors() {
 	public int eliminateOther(int [][] mapState, boolean[][] mapBlack, int actual_black, Integer[][] map) {		
 		
 		int new_blacks = 0;
+		int go_up = 0;
 		for(int twice = 0; twice < 2; ++twice) {
 			for(int i=0; i<gridSize; ++i) {
 				for(int j=0; j<gridSize; ++j) {
 					
-					int go_up = 0;
 					if(mapState[i][j]==2) {
 						if(i!=gridSize - 1) {
 
@@ -294,33 +299,15 @@ public boolean[][] checkNeighbors() {
 								if(map[x][j] == map[i][j]) {
 									if(mapState[x][j] == 0){
 										
-										mapBlack[x][j] = true;
 										new_blacks++;
-										mapState[x][j] = 1;
-										if(x!=0) {
-											go_up = 1;
-											mapState[x-1][j] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[x+1][j] = 2;
-										}
-										if(j!=0) {
-											mapState[x][j-1] = 2;
-										}
-										if(j!=gridSize-1) {
-											mapState[x][j+1] = 2;
-										}
-									
+										go_up = eliminateOther_DOWN(x, j, mapBlack, mapState);
+			
 										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState, map)){	
-											
 											mapBlack[x][j] = false;
 											new_blacks--;
 											return -1;
 										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
+										else { if(go_up == 1) { twice = 0; } }
 									} // if mapState
 								} // if map
 							} // for
@@ -332,32 +319,15 @@ public boolean[][] checkNeighbors() {
 									 
 									if(mapState[x][j] == 0) {
 										
-										mapBlack[x][j] = true;
 										new_blacks++;
-										mapState[x][j] = 1;
-										if(x!=0) {
-											go_up = 1;
-											mapState[x-1][j] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[x+1][j] = 2;
-										}
-										if(j!=0) {
-											mapState[x][j-1] = 2;
-										}
-										if(j!=gridSize-1) {
-											mapState[x][j+1] = 2;
-										}
+										go_up = eliminateOther_UP(x, j, mapBlack, mapState);
 										
 										if(!checkAll(x, j, actual_black+new_blacks, mapBlack, mapState, map))
 										{	mapBlack[x][j] = false;
 											new_blacks--;
 											return -1;
 										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
+										else { if(go_up == 1) { twice = 0; } }
 									} // if mapState
 								} // if map
 							} // for
@@ -369,22 +339,8 @@ public boolean[][] checkNeighbors() {
 									
 									if(mapState[i][x] == 0) {
 										
-										mapBlack[i][x] = true;
 										new_blacks++;
-										mapState[i][x] = 1;
-										if(i!=0) {
-											go_up = 1;
-											mapState[i-1][x] = 2;
-										}
-										if(i!=gridSize-1) {
-											mapState[i+1][x] = 2;
-										}
-										if(x!=0) {
-											mapState[i][x-1] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[i][x+1] = 2;
-										}
+										go_up = eliminateOther_RIGHT(i, x, mapBlack, mapState);
 										
 										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState, map)) {
 											
@@ -392,10 +348,7 @@ public boolean[][] checkNeighbors() {
 											new_blacks--;
 											return -1;
 										}	
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
+										else { if(go_up == 1) { twice = 0; } }
 									} // if mapState
 								} // if map
 							} // for
@@ -407,22 +360,8 @@ public boolean[][] checkNeighbors() {
 									
 									if(mapState[i][x] == 0) {
 										
-										mapBlack[i][x] = true;
 										new_blacks++;
-										mapState[i][x] = 1;
-										if(i!=0) {
-											go_up = 1;
-											mapState[i-1][x] = 2;
-										}
-										if(i!=gridSize-1) {
-											mapState[i+1][x] = 2;
-										}
-										if(x!=0) {
-											mapState[i][x-1] = 2;
-										}
-										if(x!=gridSize-1) {
-											mapState[i][x+1] = 2;
-										}
+										go_up = eliminateOther_LEFT(i, x, mapBlack, mapState);
 										
 										if(!checkAll(i, x, actual_black+new_blacks, mapBlack, mapState, map)) {
 											
@@ -430,10 +369,7 @@ public boolean[][] checkNeighbors() {
 											new_blacks--;
 											return -1;
 										}
-										else {
-											if(go_up == 1)
-												twice = 0;
-										}
+										else { if(go_up == 1) { twice = 0; } }
 									} // if mapState
 								} // if map
 							} // for
@@ -445,6 +381,89 @@ public boolean[][] checkNeighbors() {
 		return new_blacks;
 	}
 	
+	public int eliminateOther_DOWN(int x, int j, boolean[][] mapBlack, int[][] mapState) {
+	
+		int go_up = 0;
+		mapBlack[x][j] = true;
+		mapState[x][j] = 1;
+		if(x!=0) {
+			go_up = 1;
+			mapState[x-1][j] = 2;
+		}
+		if(x!=gridSize-1) {
+			mapState[x+1][j] = 2;
+		}
+		if(j!=0) {
+			mapState[x][j-1] = 2;
+		}
+		if(j!=gridSize-1) {
+			mapState[x][j+1] = 2;
+		}
+		return go_up;
+	}
+	
+	public int eliminateOther_UP(int x, int j, boolean[][] mapBlack, int[][] mapState) {
+		
+		int go_up = 0;
+		mapBlack[x][j] = true;
+		mapState[x][j] = 1;
+		if(x!=0) {
+			go_up = 1;
+			mapState[x-1][j] = 2;
+		}
+		if(x!=gridSize-1) {
+			mapState[x+1][j] = 2;
+		}
+		if(j!=0) {
+			mapState[x][j-1] = 2;
+		}
+		if(j!=gridSize-1) {
+			mapState[x][j+1] = 2;
+		}
+		return go_up;
+	}
+	
+	public int eliminateOther_LEFT(int i, int x, boolean[][] mapBlack, int[][] mapState) {
+		
+		int go_up = 0;
+		mapBlack[i][x] = true;
+		mapState[i][x] = 1;
+		if(i!=0) {
+			go_up = 1;
+			mapState[i-1][x] = 2;
+		}
+		if(i!=gridSize-1) {
+			mapState[i+1][x] = 2;
+		}
+		if(x!=0) {
+			mapState[i][x-1] = 2;
+		}
+		if(x!=gridSize-1) {
+			mapState[i][x+1] = 2;
+		}
+		return go_up;
+	}
+	
+	public int eliminateOther_RIGHT(int i, int x, boolean[][] mapBlack, int[][] mapState) {
+		
+		int go_up = 0;
+		mapBlack[i][x] = true;
+		mapState[i][x] = 1;
+		if(i!=0) {
+			go_up = 1;
+			mapState[i-1][x] = 2;
+		}
+		if(i!=gridSize-1) {
+			mapState[i+1][x] = 2;
+		}
+		if(x!=0) {
+			mapState[i][x-1] = 2;
+		}
+		if(x!=gridSize-1) {
+			mapState[i][x+1] = 2;
+		}
+		return go_up;
+	}
 	
 	/* cover neighbors of black as greens */
 	public void setGreens(int [][] mapState) {
@@ -504,8 +523,7 @@ public boolean[][] checkNeighbors() {
 									return false;
 							}
 						}
-					}
-					
+					}// if i
 					if(i!=0) {
 						for(int x=i-1; x >= 0; --x) {
 							
@@ -514,8 +532,7 @@ public boolean[][] checkNeighbors() {
 									return false;
 							}
 						}
-					}
-					
+					}// if i
 					if(j!=gridSize - 1) {
 						for(int x=j+1; x < gridSize; ++x) {
 							if(mapState[i][x] == 2) {
@@ -523,8 +540,7 @@ public boolean[][] checkNeighbors() {
 									return false;
 							}
 						}
-					}	
-					
+					}// if j						
 					if(j!=0) {
 						for(int x=j-1; x >= 0; --x) {
 							if(mapState[i][x] == 2) {
@@ -532,10 +548,10 @@ public boolean[][] checkNeighbors() {
 									return false;
 							}
 						}
-					}	
-				}
-			}
-		}
+					}// if j	
+				}// if mapState
+			}// for j
+		}// for i
 		return true;
 	}
 
@@ -544,10 +560,7 @@ public boolean[][] checkNeighbors() {
 		Integer[][] checked = new Integer[gridSize][gridSize];  // initialized with 0, 0-unvisited, 1-with collision, 2-without collision and black, 3 - black 
 		
 		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				checked[i][j] = 0;
-			}
-		}
+			for (int j = 0; j < gridSize; j++) { checked[i][j] = 0; } }
 		
 		for (int i = 0; i < gridSize; i++) {
 			for (int j = 0; j < gridSize; j++) {
@@ -571,8 +584,7 @@ public boolean[][] checkNeighbors() {
 						collisions++;
 					}
 					l++;
-				}
-				
+				}		
 				// there was no collision and it is no black tile
 				if(collisions == 0 && checked[i][j] == 0)
 					checked[i][j] = 2;
@@ -580,7 +592,6 @@ public boolean[][] checkNeighbors() {
 					checked[i][j] = 1;
 			}
 		}
-		
 		return checked;
 	}	
 	

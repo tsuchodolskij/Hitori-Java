@@ -127,7 +127,7 @@ public class GridPane extends JPanel {
 			}
 		}
 		
-		for(int i=0; i<gridSize; ++i) {
+		/*for(int i=0; i<gridSize; ++i) {
 			for(int j=0; j<gridSize; ++j) {
 				if(map[i][j]>9)
 					System.out.print(map[i][j]+" ");
@@ -135,6 +135,46 @@ public class GridPane extends JPanel {
 					System.out.print(map[i][j]+"  ");
 			}
 			System.out.println();
+		}*/
+	}
+	
+	private void buildNewGrid(int gridSize, SettingsPane sp, MapLoader loader) {
+		this.sp = sp;
+		sp.setGridPane(this);
+		alg = new Algorithm(gridSize);
+		touch = 0;
+		cut = false;
+		this.gridSize = gridSize;
+		howManyBlack = 0;
+		cellGrid = new Cell[gridSize][gridSize];
+		setLayout(new GridLayout(gridSize, gridSize));
+		map = new Integer[gridSize][gridSize];
+		clicked = new boolean[gridSize][gridSize];
+		notColiding = new boolean[gridSize][gridSize];
+		
+		if (loader == null) prepareMap(gridSize);
+		else readMapFromLoader(loader);
+		
+		alg.setMap(map);
+		alg.setGrid(this);
+
+		for (int i = 0; i < gridSize; i++) {
+			for (int j = 0; j < gridSize; j++) {
+				
+				cellGrid[i][j] = new Cell(map[i][j], i, j);
+				if (gridSize <= 10)
+					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 24));
+				else if (gridSize <= 20)
+					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 18));
+				
+				cellGrid[i][j].setBackground(Color.WHITE);
+				cellGrid[i][j].setBorder(new LineBorder(Color.BLACK, 1));
+				cellGrid[i][j].addActionListener(new ButtonListener());
+				add(cellGrid[i][j]);
+				
+				clicked[i][j] = false;
+				notColiding[i][j] = false;
+			}
 		}
 	}
 
@@ -151,7 +191,7 @@ public class GridPane extends JPanel {
 	        @Override
 	        public void run() {
 	            try {
-	                Thread.sleep(1000);
+	                Thread.sleep(0);
 	            } catch (InterruptedException e) {
 	            }
 	
@@ -167,8 +207,14 @@ public class GridPane extends JPanel {
 	}
 	
 	protected void runOnUiThread(Runnable runnable) {
-		alg.aStar();
-		sp.statusSetText("<html><div style='text-align: center;'>"+ "A* SOLVED HITORI" +"</div></html>");
+			sp.statusSetText("");
+			alg = new Algorithm(gridSize);
+			alg.setMap(map);
+			alg.setGrid(this);
+			
+			alg.aStar();
+			
+			sp.statusSetText("<html><div style='text-align: center;'>"+ "A* SOLVED HITORI" +"</div></html>");
 	}
 	
 	public void updateMap(boolean[][] newMap){
