@@ -8,7 +8,6 @@ public class State {
 	private double cost;
 	private double hc;
 	private int isTerminal;  // 0- not terminal, 1 - terminal, 2 - collision (high cost function, not go in this state)
-	private int weight, prevWeight;
 	private int Nr;
 	
 	public State(int x, int y, int gridSize, boolean[][] black, int blackCount, int chainLength, int isTerminal, int sidesCollisions, int nr){
@@ -19,17 +18,17 @@ public class State {
 		this.isTerminal = isTerminal;
 		this.Nr = nr;		
 		
-		cost = chainLength + sidesCollisions;
-		if(isTerminal == 2)
-			cost *= gridSize*gridSize;
+		cost = gridSize*gridSize+ chainLength + 4-sidesCollisions*3;
+		//if(isTerminal == 2)
+			//cost *= gridSize*gridSize;
 		
 		heuristic = (gridSize*gridSize - 2*blackCount);
 		if(isTerminal == 1)
 			heuristic = 0;
 		hc = heuristic + cost;
 		
-		System.out.println("\nNew state hc: "+hc);
-		System.out.println("New state Nr: "+Nr);
+		//System.out.println("\nNew state hc: "+hc);
+		//System.out.println("New state Nr: "+Nr);
 	}
 	
 	public double getHC() {

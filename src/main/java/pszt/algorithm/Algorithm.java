@@ -64,6 +64,9 @@ public class Algorithm {
 			if(tmp != null)
 				for(State i : tmp) {     			// adding every son of lowestHC
 					states.add(i);
+					//if(i.getNr()>400)
+						//break b;
+					System.out.println("Stworzone: "+i.getNr());
 				}
 			
 			grid.updateMap(lowestHC.getMapBlack());
@@ -105,6 +108,10 @@ private ArrayList<State> expand(State e) {
 				} // z for
 				
 				if(vect.size() > 1) { // if there is collision, make other states
+					for(int q = 0; q<vect.size(); q++)
+					{
+						System.out.println("vec: "+vect.get(q).x+","+vect.get(q).y);
+					}
 					boolean wrong[] = new boolean[vect.size()];
 					for(int ww = 0; ww < vect.size(); ++ww)
 						wrong[ww] = false;
@@ -146,7 +153,7 @@ private ArrayList<State> expand(State e) {
 								a : for (int i1 = 0; i1 < gridSize; i1++) {
 									for (int j1 = 0; j1 < gridSize; j1++) {
 										if(red[i1][j1] == 1) {
-											isTerminal = 0; // if at least one tile is red, it is no terminal
+											isTerminal = 0; // if at least one tile is red, it is not terminal
 											break a;
 										}
 									}
@@ -467,12 +474,15 @@ public boolean[][] checkNeighbors() {
 	public boolean checkAll(int x, int y, int nrBlack, boolean[][] mapBlack, int[][] mapState, Integer[][] map) {
 		nrBlack++;
 		if(checkTouch(x, y, mapBlack)!=0) {
+			System.out.println("Touch");
 			return false;
 		}
 		if(checkCut(mapBlack, nrBlack)) {
+			System.out.println("Cut");
 			return false;
 		}
 		if(!checkGreens(mapState, map)) {
+			System.out.println("Greens");
 			return false;
 		}
 		return true;
