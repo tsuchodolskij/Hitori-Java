@@ -1,4 +1,4 @@
-package pszt.hitori;
+package pszt.UI;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -9,6 +9,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import pszt.hitori.Game;
 
 public class Hitori extends JFrame {
 	

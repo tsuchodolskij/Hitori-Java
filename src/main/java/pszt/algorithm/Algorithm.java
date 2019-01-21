@@ -3,7 +3,7 @@ package pszt.algorithm;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import pszt.hitori.GridPane;
+import pszt.UI.GridPane;
 
 public class Algorithm {
 	private int gridSize;
@@ -32,11 +32,6 @@ public class Algorithm {
 		grid.updateMap(newMapBlack);
 		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0)); // starting state
 
-		/*try {
-			TimeUnit.SECONDS.sleep(2);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
 		
 		while(true) {	// finding state with the lowest heuristic and cost
 			State lowestHC = null;

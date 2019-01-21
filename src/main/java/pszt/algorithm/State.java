@@ -30,10 +30,7 @@ public class State {
 		heuristic = (gridSize*gridSize - 2*blackCount);
 		if(isTerminal == 1)
 			heuristic = 0;
-		hc = heuristic + cost;
-		
-		//System.out.println("\nNew state hc: "+hc);
-		//System.out.println("New state Nr: "+Nr);
+			hc = heuristic + cost;
 	}
 	
 	public double getHC() {

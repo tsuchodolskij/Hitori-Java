@@ -1,9 +1,9 @@
+/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/UI/SettingsPane.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/algorithm/State.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/hitori/Game.java
-/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/hitori/SettingsPane.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/hitori/Cell.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/algorithm/Algorithm.java
-/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/hitori/Hitori.java
-/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/hitori/GridPane.java
+/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/UI/Hitori.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/algorithm/Point.java
+/home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/UI/GridPane.java
 /home/tomas/Documents/Hitori-Maven/Hitori-Java/src/main/java/pszt/map/MapLoader.java

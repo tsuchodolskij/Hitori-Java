@@ -62,7 +62,7 @@
           <manifest>
             <addClasspath>true</addClasspath>
             <classpathPrefix>lib/</classpathPrefix>
-            <mainClass>pszt.hitori.Hitori</mainClass>
+            <mainClass>pszt.UI.Hitori</mainClass>
           </manifest>
         </archive>
       </configuration>

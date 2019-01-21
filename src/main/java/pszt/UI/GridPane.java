@@ -1,4 +1,4 @@
-package pszt.hitori;
+package pszt.UI;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +15,7 @@ import javax.swing.border.LineBorder;
 
 import pszt.algorithm.Algorithm;
 import pszt.algorithm.Point;
+import pszt.hitori.Cell;
 import pszt.map.MapLoader;
 
 public class GridPane extends JPanel {
@@ -89,56 +90,6 @@ public class GridPane extends JPanel {
 	}
 	
 	public GridPane(int gridSize, SettingsPane sp, MapLoader loader) {
-		this.sp = sp;
-		sp.setGridPane(this);
-		alg = new Algorithm(gridSize);
-		touch = 0;
-		cut = false;
-		this.gridSize = gridSize;
-		howManyBlack = 0;
-		cellGrid = new Cell[gridSize][gridSize];
-		setLayout(new GridLayout(gridSize, gridSize));
-		map = new Integer[gridSize][gridSize];
-		clicked = new boolean[gridSize][gridSize];
-		notColiding = new boolean[gridSize][gridSize];
-		
-		if (loader == null) prepareMap(gridSize);
-		else readMapFromLoader(loader);
-		
-		alg.setMap(map);
-		alg.setGrid(this);
-
-		for (int i = 0; i < gridSize; i++) {
-			for (int j = 0; j < gridSize; j++) {
-				
-				cellGrid[i][j] = new Cell(map[i][j], i, j);
-				if (gridSize <= 10)
-					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 24));
-				else if (gridSize <= 20)
-					cellGrid[i][j].setFont(new Font("Dialog", Font.BOLD, 18));
-				
-				cellGrid[i][j].setBackground(Color.WHITE);
-				cellGrid[i][j].setBorder(new LineBorder(Color.BLACK, 1));
-				cellGrid[i][j].addActionListener(new ButtonListener());
-				add(cellGrid[i][j]);
-				
-				clicked[i][j] = false;
-				notColiding[i][j] = false;
-			}
-		}
-		
-		/*for(int i=0; i<gridSize; ++i) {
-			for(int j=0; j<gridSize; ++j) {
-				if(map[i][j]>9)
-					System.out.print(map[i][j]+" ");
-				else
-					System.out.print(map[i][j]+"  ");
-			}
-			System.out.println();
-		}*/
-	}
-	
-	private void buildNewGrid(int gridSize, SettingsPane sp, MapLoader loader) {
 		this.sp = sp;
 		sp.setGridPane(this);
 		alg = new Algorithm(gridSize);
@@ -307,7 +258,6 @@ public class GridPane extends JPanel {
 				}
 			}
 			else if(!checked[first][second]){					// add new black field to array
-				//System.out.println("covered: "+first+", "+second);
 				points.add(new Point(first, second));
 				checked[first][second] = true;
 				hit++;
