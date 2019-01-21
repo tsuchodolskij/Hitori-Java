@@ -26,15 +26,12 @@ public class Algorithm {
 	public void aStar() {
 		
 		ArrayList<State> states = new ArrayList<State>();
-		// expanding zero state
+		ArrayList<State> tmp;
+
 		boolean [][] newMapBlack = checkNeighbors();
 		grid.updateMap(newMapBlack);
-		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0));
-		ArrayList<State> tmp = expand(states.get(0));
-		for(State i : tmp) {
-			states.add(i);
-		}
-		
+		states.add(new State(0, 0, gridSize, newMapBlack, howManyBlack, 0, 0, 0, 0)); // starting state
+
 		/*try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
@@ -54,17 +51,14 @@ public class Algorithm {
 					lowestIndex = i;
 				}
 			}
-
 		
 			try {
 				TimeUnit.SECONDS.sleep(0);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			//System.out.println("LOWEST HC:" + lowestHC.getHC());
-			//System.out.println("LOWEST NR:" + lowestHC.getNr());
+
 			if(lowestHC.getIsTerminal() == 1) { // we have the solution
-				//System.out.println("Znaleziono rozwiazanie: x:" + lowestHC.x+ " y: " + lowestHC.y);
 				grid.updateMap(lowestHC.getMapBlack());
 				break;
 			}
@@ -72,15 +66,10 @@ public class Algorithm {
 			tmp = expand(lowestHC);
 			if(tmp != null)
 				for(State i : tmp) {     			// adding every son of lowestHC
-					states.add(i);
-					//if(i.getNr()>400)
-						//break b;
-					System.out.println("Stworzone: "+i.getNr());
-				}
+					states.add(i); }
 			
 			grid.updateMap(lowestHC.getMapBlack());
 		}
-		System.out.println("ALGORYTM A* ZAKONCZYL DZIALANIE");
 	}
 
 private ArrayList<State> expand(State e) {
@@ -117,10 +106,7 @@ private ArrayList<State> expand(State e) {
 				} // z for
 				
 				if(vect.size() > 1) { // if there is collision, make other states
-					for(int q = 0; q<vect.size(); q++)
-					{
-						System.out.println("vec: "+vect.get(q).x+","+vect.get(q).y);
-					}
+					
 					boolean wrong[] = new boolean[vect.size()];
 					for(int ww = 0; ww < vect.size(); ++ww)
 						wrong[ww] = false;
@@ -139,15 +125,11 @@ private ArrayList<State> expand(State e) {
 									newMapBlack[k][x] = true;
 									mapState[k][x] = 1;
 								}
-								else {
-									newMapBlack[k][x] = false;
-								}
+								else { newMapBlack[k][x] = false;}
 							}
 						}
 						newMapBlack[vect.get(m).x][vect.get(m).y] = true; // setting him black
 						mapState[vect.get(m).x][vect.get(m).y] = 1;
-						
-						//System.out.println("\nPunkt: x: " + vect.get(m).x + " y: " + vect.get(m).y);
 
 						setGreens(mapState);
 						int isTerminal = 1;
@@ -174,9 +156,7 @@ private ArrayList<State> expand(State e) {
 								stateNr++;
 							}
 						}
-						else {
-							wrong[m] = true; 
-						}
+						else { wrong[m] = true; }
 					}	
 					for(int w1=0; w1<vect.size()-1; ++w1) {
 						if(wrong[w1]) {
@@ -493,15 +473,12 @@ public boolean[][] checkNeighbors() {
 	public boolean checkAll(int x, int y, int nrBlack, boolean[][] mapBlack, int[][] mapState, Integer[][] map) {
 		nrBlack++;
 		if(checkTouch(x, y, mapBlack)!=0) {
-			System.out.println("Touch");
 			return false;
 		}
 		if(checkCut(mapBlack, nrBlack)) {
-			System.out.println("Cut");
 			return false;
 		}
 		if(!checkGreens(mapState, map)) {
-			System.out.println("Greens");
 			return false;
 		}
 		return true;

@@ -1,6 +1,10 @@
 package pszt.hitori;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import pszt.algorithm.Algorithm;
 
@@ -9,7 +13,7 @@ public class TestCheck {
 
 	int gridSize = 5; // should be > 2
 
-	@org.junit.jupiter.api.Test
+	@Test
 	public void checkFunctionWithAllNumbersSameNoBlackShouldReturnTrue() {
 		Algorithm tester = new Algorithm(gridSize);
 
@@ -34,7 +38,7 @@ public class TestCheck {
 		assertEquals(true, collision);
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	public void checkFunctionWithAllNumbersSameAllBlackShouldReturnFalse() {
 		Algorithm tester = new Algorithm(gridSize);
 
@@ -59,7 +63,7 @@ public class TestCheck {
 		assertEquals(false, collision);
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	public void checkFunctionWithNumbersDiagonallyNoBlackShouldReturnFalse() {
 		Algorithm tester = new Algorithm(gridSize);
 
@@ -88,7 +92,7 @@ public class TestCheck {
 	}
 
 	// in right top corner duplicate number of [0][0]
-	@org.junit.jupiter.api.Test
+	@Test
 	public void checkFunctionWithOneRepetitionInCornersNoBlackShouldReturnTrue() {
 		Algorithm tester = new Algorithm(gridSize);
 
@@ -118,7 +122,7 @@ public class TestCheck {
 	}
 
 	// in right top corner duplicate number of [0][0], but its black so no collision
-	@org.junit.jupiter.api.Test
+	@Test
 	public void checkFunctionWithOneRepetitionInCornersOneCornerBlackShouldReturnFalse() {
 		Algorithm tester = new Algorithm(gridSize);
 
