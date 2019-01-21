@@ -2,9 +2,9 @@ pszt/hitori/Hitori.class
 pszt/map/MapLoader.class
 pszt/hitori/SettingsPane$loadGridListener.class
 pszt/hitori/SettingsPane.class
-pszt/hitori/SettingsPane$buildGridListener.class
-pszt/hitori/Cell.class
 pszt/hitori/SettingsPane$checkListener.class
+pszt/hitori/Cell.class
+pszt/hitori/SettingsPane$buildGridListener.class
 pszt/hitori/SettingsPane$solveListener.class
 pszt/hitori/GridPane$1.class
 pszt/algorithm/Algorithm.class

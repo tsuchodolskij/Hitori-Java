@@ -1,7 +1,7 @@
 pszt/hitori/TestCheckTouch.class
 pszt/hitori/TestCheckSidesCollision.class
 pszt/hitori/TestEliminateOther.class
-pszt/hitori/TestCheckNeighbours.class
 pszt/hitori/TestCheckCut.class
-pszt/hitori/TestCheck.class
+pszt/hitori/TestCheckNeighbours.class
 pszt/hitori/TestCheckGreens.class
+pszt/hitori/TestCheck.class
